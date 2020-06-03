@@ -5,8 +5,77 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Navi"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Navi"
+        Background="#162029"
+        Height="450" Width="800"
+        MinHeight="250" MinWidth="400">
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.Column="0" Background="#1f2029">
+            <Label  Content="Libraries" FontSize="24" Foreground="White" Margin="40,10"/>
+            <ListView>
+                
+            </ListView>
+        </StackPanel>
+        <Border Grid.Column="0" Background="DarkGray" Height="100" VerticalAlignment="Bottom">
+            <Grid>
+                <StackPanel >
+                    <Slider Margin="10,5,10,0"/>
+                    <Label Content="13:43 / 26:73" FontSize="14" HorizontalContentAlignment="Center" Foreground="White"/>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Button Width="30" Height="30" Margin="5"/>
+                        <Button Width="30" Height="30" Margin="5"/>
+                        <Button Width="30" Height="30" Margin="5"/>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </Border>
+        <WrapPanel Grid.Column="1">
+            <Button Width="50" Height="50" Margin="20"/>
+            <Button Width="50" Height="50" Margin="20"/>
+            <Button Width="50" Height="50" Margin="20"/>
+            <Button Width="50" Height="50" Margin="20"/>
+            <Button Width="50" Height="50" Margin="20"/>
+            <Button Width="50" Height="50" Margin="20"/>
+            <Button Width="50" Height="50" Margin="20"/>
+            <Button Width="50" Height="50" Margin="20"/>
+            <Button Width="50" Height="50" Margin="20"/>
+            <Button Width="50" Height="50" Margin="20"/>
+            <Button Width="50" Height="50" Margin="20"/>
+            <Button Width="50" Height="50" Margin="20"/>
+            <Button Width="50" Height="50" Margin="20"/>
+            <Button Width="50" Height="50" Margin="20"/>
+            <Button Width="50" Height="50" Margin="20"/>
+            <Button Width="50" Height="50" Margin="20"/>
+            <Button Width="50" Height="50" Margin="20"/>
+            <Button Width="50" Height="50" Margin="20"/>
+            <Button Width="50" Height="50" Margin="20"/>
+            <Button Width="50" Height="50" Margin="20"/>
+            <Button Width="50" Height="50" Margin="20"/>
+            <Button Width="50" Height="50" Margin="20"/>
+            <Button Width="50" Height="50" Margin="20"/>
+
+        </WrapPanel>
+
+
+
+
+
+        <!--
         
+        <DockPanel HorizontalAlignment="Center">
+            <TextBox x:Name="txtBox" Width="200" Height="40"/>
+            <Button x:Name="buttonSearch" Content="Download" Width="200" Height="40" Click="ButtonSearch_Click"/>
+            <Label x:Name="labelResult" FontSize="12" Foreground="White"/>
+        </DockPanel>
+        <Image x:Name="imgThumbnail"/>
+        <Button x:Name="buttonPlay" Content="Play" Width="200" Height="40" Click="ButtonPlay_Click"/>
+        
+        -->
     </Grid>
 </Window>
