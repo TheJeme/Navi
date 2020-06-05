@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Windows;
@@ -16,10 +17,13 @@ namespace Navi
     /// </summary>
     public partial class MainWindow : Window
     {
-        /**
+
+        List<string> saa = new List<string>();
+        List<YoutubeExplode.Videos.Video> musicList = new List<YoutubeExplode.Videos.Video>();
+        
         private YoutubeClient youtube;
         private YoutubeConverter youtubeConverter;
-        private MediaPlayer snd;        
+        private MediaPlayer mediaPlayer;        
 
         private bool isPlayingAudio;
 
@@ -33,6 +37,63 @@ namespace Navi
 
             youtube = new YoutubeClient();
             youtubeConverter = new YoutubeConverter(youtube);
+
+            saa.Add("Content1");
+            saa.Add("Content2");
+            saa.Add("Content1");
+            saa.Add("Content2");
+            saa.Add("Content1");
+            saa.Add("Content2");
+            saa.Add("Content1");
+            saa.Add("Content2");
+            saa.Add("Content1");
+            saa.Add("Content2");
+            saa.Add("Content1");
+            saa.Add("Content2");
+            saa.Add("Content2");
+            saa.Add("Content1");
+            saa.Add("Content2");
+            saa.Add("Content1");
+            saa.Add("Content2");
+            saa.Add("Content1");
+            saa.Add("Content2");
+            saa.Add("Content1");
+            saa.Add("Content2");
+            saa.Add("Content1");
+            saa.Add("Content2");
+            saa.Add("Content1");
+            saa.Add("Content2");
+            saa.Add("Content2");
+            saa.Add("Content1");
+            saa.Add("Content2");
+            saa.Add("Content1");
+            saa.Add("Content2");
+            saa.Add("Content1");
+            saa.Add("Content2");
+            saa.Add("Content1");
+            saa.Add("Content2");
+            saa.Add("Content1");
+            saa.Add("Content2");
+            saa.Add("Content1");
+            saa.Add("Content2");
+            saa.Add("Content2");
+            saa.Add("Content1");
+            saa.Add("Content2");
+            saa.Add("Content1");
+            saa.Add("Content2");
+            saa.Add("Content1");
+            saa.Add("Content2");
+            saa.Add("Content1");
+            saa.Add("Content2");
+            saa.Add("Content1");
+            saa.Add("Content2");
+            saa.Add("Content1");
+            saa.Add("Content2");
+            saa.Add("Content2");
+
+            libraryListView.ItemsSource = saa;
+
+
         }
 
         private void checkLibraryStatus()
@@ -50,12 +111,13 @@ namespace Navi
             try
             {
                 var video = await youtube.Videos.GetAsync(youtubeID);
+                
                 var title = cleanTitle(video.Title);
                 labelResult.Content = title;
                 imgThumbnail.Source = new BitmapImage(new Uri(video.Thumbnails.StandardResUrl));
 
                 checkLibraryStatus();
-
+                musicList.Add(video);
                 var destinationPath = Path.Combine("./library/test1/", $"{title}.mp3");
                 downloadImageAndAudio(youtubeID, destinationPath, video);
 
@@ -83,10 +145,10 @@ namespace Navi
         {
             if (!isPlayingAudio)
             {
-                snd = new MediaPlayer();
-                snd.Volume = 0.05f;
-                snd.Open(new Uri(Environment.CurrentDirectory + "/library/test1/Hanatan - Ghost Rule.mp3"));
-                snd.Play();
+                mediaPlayer = new MediaPlayer();
+                mediaPlayer.Volume = 0.05f;
+                mediaPlayer.Open(new Uri(Environment.CurrentDirectory + "/library/test1/Hanatan - Ghost Rule.mp3"));
+                mediaPlayer.Play();
                 isPlayingAudio = true;
             }
         }
@@ -94,11 +156,11 @@ namespace Navi
 
         private async void downloadImageAndAudio(string youtubeID, string destinationPath, YoutubeExplode.Videos.Video video)
         {
-            using (WebClient webClient = new WebClient())
-            { 
-                webClient.DownloadFileAsync(new Uri(video.Thumbnails.StandardResUrl), $"./library/test1/{video.Title}.png");
-            }
-            await youtubeConverter.DownloadVideoAsync(youtubeID, destinationPath);
-        }**/
+           using (WebClient webClient = new WebClient())
+           { 
+               webClient.DownloadFileAsync(new Uri(video.Thumbnails.StandardResUrl), $"./library/test1/{video.Title}.png");
+           }
+           await youtubeConverter.DownloadVideoAsync(youtubeID, destinationPath);
+        }
     }
 }

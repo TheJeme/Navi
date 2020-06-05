@@ -8,74 +8,88 @@
         Title="Navi"
         Background="#162029"
         Height="450" Width="800"
-        MinHeight="250" MinWidth="400">
+        MinHeight="450" MinWidth="400">
     <Grid>
+        
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
-
-        <StackPanel Grid.Column="0" Background="#1f2029">
-            <Label  Content="Libraries" FontSize="24" Foreground="White" Margin="40,10"/>
-            <ListView>
-                
-            </ListView>
-        </StackPanel>
-        <Border Grid.Column="0" Background="DarkGray" Height="100" VerticalAlignment="Bottom">
+        <Border Grid.Column="0" Background="#1f2029" BorderBrush="White" BorderThickness="1">
             <Grid>
-                <StackPanel >
-                    <Slider Margin="10,5,10,0"/>
-                    <Label Content="13:43 / 26:73" FontSize="14" HorizontalContentAlignment="Center" Foreground="White"/>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <ListView Background="#1f2029" x:Name="libraryListView" BorderThickness="0" VerticalAlignment="Top" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Top">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Viewbox>
+                                <Label x:Name="ListViewLabel" Content="{Binding}" Margin="10,0" Foreground="White" Height="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                            </Viewbox>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+                <Border Grid.Row="1" Background="#1D2F40" BorderBrush="White" BorderThickness="1">
+                    <StackPanel>
 
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <Button Width="30" Height="30" Margin="5"/>
-                        <Button Width="30" Height="30" Margin="5"/>
-                        <Button Width="30" Height="30" Margin="5"/>
+                        <Label Content="【MV】 鹿乃 「Stella-rium」 【OFFICIAL" Width="200" HorizontalContentAlignment="Center" Foreground="White"/>
+
+                        <Slider Margin="10,5,10,0"/>
+                        <Label Content="13:43 / 26:73" FontSize="14" HorizontalContentAlignment="Center" Foreground="White"/>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+
+                            <Border Width="25" Height="25" Margin="5" Background="Gray" CornerRadius="5">
+                                <Image Source="Resources/loop.png" Width="20" Height="20"/>
+                            </Border>
+
+                            <Border Width="30" Height="30" Margin="5" Background="AliceBlue" CornerRadius="5">
+                                <Image Source="Resources/skipb.png"/>
+                            </Border>
+
+                            <Border Width="30" Height="30" Margin="5" Background="AliceBlue" CornerRadius="5">
+                                <Image Source="Resources/play.png"/>
+                            </Border>
+
+                            <Border Width="30" Height="30" Margin="5" Background="AliceBlue" CornerRadius="5">
+                                <Image Source="Resources/skipf.png"/>
+                            </Border>
+
+                            <Border Width="25" Height="25" Margin="5" Background="AliceBlue" CornerRadius="5">
+                                <Image Source="Resources/volume-high.png" Width="20" Height="20"/>
+                            </Border>
+
+                        </StackPanel>
+                        <Slider x:Name="volumeSlider" Visibility="Collapsed" Margin="5"/>
                     </StackPanel>
-                </StackPanel>
+                </Border>
             </Grid>
         </Border>
-        <WrapPanel Grid.Column="1">
-            <Button Width="50" Height="50" Margin="20"/>
-            <Button Width="50" Height="50" Margin="20"/>
-            <Button Width="50" Height="50" Margin="20"/>
-            <Button Width="50" Height="50" Margin="20"/>
-            <Button Width="50" Height="50" Margin="20"/>
-            <Button Width="50" Height="50" Margin="20"/>
-            <Button Width="50" Height="50" Margin="20"/>
-            <Button Width="50" Height="50" Margin="20"/>
-            <Button Width="50" Height="50" Margin="20"/>
-            <Button Width="50" Height="50" Margin="20"/>
-            <Button Width="50" Height="50" Margin="20"/>
-            <Button Width="50" Height="50" Margin="20"/>
-            <Button Width="50" Height="50" Margin="20"/>
-            <Button Width="50" Height="50" Margin="20"/>
-            <Button Width="50" Height="50" Margin="20"/>
-            <Button Width="50" Height="50" Margin="20"/>
-            <Button Width="50" Height="50" Margin="20"/>
-            <Button Width="50" Height="50" Margin="20"/>
-            <Button Width="50" Height="50" Margin="20"/>
-            <Button Width="50" Height="50" Margin="20"/>
-            <Button Width="50" Height="50" Margin="20"/>
-            <Button Width="50" Height="50" Margin="20"/>
-            <Button Width="50" Height="50" Margin="20"/>
-
-        </WrapPanel>
 
 
+            <ListView x:Name="musicListView" Grid.Column="1" Background="Transparent" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" VerticalAlignment="Top">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="VerticalContentAlignment" Value="Top"/>
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Title" Width="480" DisplayMemberBinding="{Binding Path=Title}" />
+                        <GridViewColumn Header="Duration" Width="60" DisplayMemberBinding="{Binding Path=Duration}" />
+                    </GridView>
+                </ListView.View>
+            </ListView>
 
 
+            <DockPanel HorizontalAlignment="Center" Visibility="Collapsed">
+                <TextBox x:Name="txtBox" Width="200" Height="40"/>
+                <Button x:Name="buttonSearch" Content="Download" Width="200" Height="40" Click="ButtonSearch_Click"/>
+                <Label x:Name="labelResult" FontSize="12" Foreground="White"/>
+            </DockPanel>
+            <Image x:Name="imgThumbnail" Visibility="Collapsed"/>
+            <Button x:Name="buttonPlay" Content="Play" Width="200" Height="40" Click="ButtonPlay_Click"/>
 
-        <!--
-        
-        <DockPanel HorizontalAlignment="Center">
-            <TextBox x:Name="txtBox" Width="200" Height="40"/>
-            <Button x:Name="buttonSearch" Content="Download" Width="200" Height="40" Click="ButtonSearch_Click"/>
-            <Label x:Name="labelResult" FontSize="12" Foreground="White"/>
-        </DockPanel>
-        <Image x:Name="imgThumbnail"/>
-        <Button x:Name="buttonPlay" Content="Play" Width="200" Height="40" Click="ButtonPlay_Click"/>
-        
-        -->
     </Grid>
 </Window>
