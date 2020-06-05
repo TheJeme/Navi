@@ -26,6 +26,7 @@ namespace Navi
         private MediaPlayer mediaPlayer;        
 
         private bool isPlayingAudio;
+        private bool isLooping;
 
         private readonly string youtubeID = "https://www.youtube.com/watch?v=_JL33DgClrI&list=RD_JL33DgClrI&start_radio=1";
 
@@ -141,7 +142,16 @@ namespace Navi
             return string.Join("_", title.Split(Path.GetInvalidFileNameChars()));
         }
 
-        private void ButtonPlay_Click(object sender, RoutedEventArgs e)
+        private async void downloadImageAndAudio(string youtubeID, string destinationPath, YoutubeExplode.Videos.Video video)
+        {
+           using (WebClient webClient = new WebClient())
+           { 
+               webClient.DownloadFileAsync(new Uri(video.Thumbnails.StandardResUrl), $"./library/test1/{video.Title}.png");
+           }
+           await youtubeConverter.DownloadVideoAsync(youtubeID, destinationPath);
+        }
+
+        private void playButton_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             if (!isPlayingAudio)
             {
@@ -150,17 +160,58 @@ namespace Navi
                 mediaPlayer.Open(new Uri(Environment.CurrentDirectory + "/library/test1/Hanatan - Ghost Rule.mp3"));
                 mediaPlayer.Play();
                 isPlayingAudio = true;
+                playIcon.Source = new BitmapImage(new Uri("./Resources/pause.png", UriKind.Relative));
+            }
+            else
+            {
+                mediaPlayer.Pause();
+                isPlayingAudio = false;
+                playIcon.Source = new BitmapImage(new Uri("./Resources/play.png", UriKind.Relative));
             }
         }
 
-
-        private async void downloadImageAndAudio(string youtubeID, string destinationPath, YoutubeExplode.Videos.Video video)
+        private void VolumeButton_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-           using (WebClient webClient = new WebClient())
-           { 
-               webClient.DownloadFileAsync(new Uri(video.Thumbnails.StandardResUrl), $"./library/test1/{video.Title}.png");
-           }
-           await youtubeConverter.DownloadVideoAsync(youtubeID, destinationPath);
+            if (volumePanel.IsVisible)
+            {
+                volumePanel.Visibility = Visibility.Collapsed;
+                volumeButton.Background = Brushes.Gray;
+            }
+            else
+            {
+                volumePanel.Visibility = Visibility.Visible;
+                volumeButton.Background = Brushes.AliceBlue;
+            }
+        }
+
+        private void LoopButton_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (isLooping)
+            {
+                loopButton.Background = Brushes.Gray;
+                isLooping = false;
+            }
+            else
+            {
+                loopButton.Background = Brushes.AliceBlue;
+                isLooping = true;
+            }
+        }
+
+        private void VolumeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (volumeSlider.Value == 0)
+            {
+                volumeIcon.Source = new BitmapImage(new Uri("./Resources/volume-mute.png", UriKind.Relative));
+            }
+            else if (volumeSlider.Value < volumeSlider.Maximum / 2)
+            {
+                volumeIcon.Source = new BitmapImage(new Uri("./Resources/volume-low.png", UriKind.Relative));
+            }
+            else
+            {
+                volumeIcon.Source = new BitmapImage(new Uri("./Resources/volume-high.png", UriKind.Relative));
+            }
         }
     }
 }

@@ -40,7 +40,7 @@
 
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
 
-                            <Border Width="25" Height="25" Margin="5" Background="Gray" CornerRadius="5">
+                            <Border x:Name="loopButton" Width="25" Height="25" Margin="5" Background="Gray" CornerRadius="5" MouseLeftButtonUp="LoopButton_MouseLeftButtonUp">
                                 <Image Source="Resources/loop.png" Width="20" Height="20"/>
                             </Border>
 
@@ -48,20 +48,25 @@
                                 <Image Source="Resources/skipb.png"/>
                             </Border>
 
-                            <Border Width="30" Height="30" Margin="5" Background="AliceBlue" CornerRadius="5">
-                                <Image Source="Resources/play.png"/>
+                            <Border x:Name="playButton" Width="30" Height="30" Margin="5" Background="AliceBlue" CornerRadius="5" MouseLeftButtonUp="playButton_MouseLeftButtonUp" >
+                                <Image x:Name="playIcon" Source="Resources/play.png"/>
                             </Border>
 
                             <Border Width="30" Height="30" Margin="5" Background="AliceBlue" CornerRadius="5">
                                 <Image Source="Resources/skipf.png"/>
                             </Border>
 
-                            <Border Width="25" Height="25" Margin="5" Background="AliceBlue" CornerRadius="5">
-                                <Image Source="Resources/volume-high.png" Width="20" Height="20"/>
+                            <Border x:Name="volumeButton" Width="25" Height="25" Margin="5" Background="Gray" CornerRadius="5" MouseLeftButtonUp="VolumeButton_MouseLeftButtonUp">
+                                <Image x:Name="volumeIcon" Source="Resources/volume-high.png" Width="20" Height="20"/>
                             </Border>
 
                         </StackPanel>
-                        <Slider x:Name="volumeSlider" Visibility="Collapsed" Margin="5"/>
+
+                        <StackPanel x:Name="volumePanel" Visibility="Collapsed" Orientation="Horizontal" HorizontalAlignment="Center">
+                            <Label Content="Volume:" Foreground="White"/>
+                            <Slider x:Name="volumeSlider" Value="0.05" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Right" Width="120" Minimum="0" Maximum="0.1" ValueChanged="VolumeSlider_ValueChanged"/>
+                        </StackPanel>
+                        
                     </StackPanel>
                 </Border>
             </Grid>
@@ -88,8 +93,7 @@
                 <Button x:Name="buttonSearch" Content="Download" Width="200" Height="40" Click="ButtonSearch_Click"/>
                 <Label x:Name="labelResult" FontSize="12" Foreground="White"/>
             </DockPanel>
-            <Image x:Name="imgThumbnail" Visibility="Collapsed"/>
-            <Button x:Name="buttonPlay" Content="Play" Width="200" Height="40" Click="ButtonPlay_Click"/>
+        <Image x:Name="imgThumbnail" Visibility="Collapsed"/>
 
     </Grid>
 </Window>
