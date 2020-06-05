@@ -18,8 +18,8 @@ namespace Navi
     public partial class MainWindow : Window
     {
 
-        List<string> saa = new List<string>();
-        List<YoutubeExplode.Videos.Video> musicList = new List<YoutubeExplode.Videos.Video>();
+        public static List<string> libraryList = new List<string>();
+        public List<YoutubeExplode.Videos.Video> musicList = new List<YoutubeExplode.Videos.Video>();
         
         private YoutubeClient youtube;
         private YoutubeConverter youtubeConverter;
@@ -46,13 +46,12 @@ namespace Navi
 
             mediaPlayer = new MediaPlayer();
 
-            saa.Add("Content1");
-            saa.Add("Content2");
-            saa.Add("Content3");
+            libraryList.Add("My library");
+
 
             InitializeComponent();
 
-            libraryListView.ItemsSource = saa;
+            libraryListView.ItemsSource = libraryList;
             musicListView.ItemsSource = musicList;
         }
 
@@ -66,7 +65,7 @@ namespace Navi
         }
 
 
-        private void checkLibraryStatus()
+        private void CheckLibraryStatus()
         {
             if (!Directory.Exists("./library"))
             {
@@ -82,14 +81,14 @@ namespace Navi
             {
                 var video = await youtube.Videos.GetAsync(youtubeID);
                 
-                var title = cleanTitle(video.Title);
+                var title = CleanTitle(video.Title);
                 imgThumbnail.Source = new BitmapImage(new Uri(video.Thumbnails.StandardResUrl));
 
-                checkLibraryStatus();
+                CheckLibraryStatus();
                 musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video);
                 musicListView.Items.Refresh();
                 var destinationPath = Path.Combine("./library/test1/", $"{title}.mp3");
-                downloadImageAndAudio(youtubeID, destinationPath, video);
+                DownloadImageAndAudio(youtubeID, destinationPath, video);
 
 
             }
@@ -107,12 +106,12 @@ namespace Navi
             }
         }
 
-        private string cleanTitle(string title)
+        private string CleanTitle(string title)
         {
             return string.Join("_", title.Split(Path.GetInvalidFileNameChars()));
         }
 
-        private async void downloadImageAndAudio(string youtubeID, string destinationPath, YoutubeExplode.Videos.Video video)
+        private async void DownloadImageAndAudio(string youtubeID, string destinationPath, YoutubeExplode.Videos.Video video)
         {
            using (WebClient webClient = new WebClient())
            { 
@@ -121,7 +120,7 @@ namespace Navi
            await youtubeConverter.DownloadVideoAsync(youtubeID, destinationPath);
         }
 
-        private void playButton_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void PlayButton_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             if (!isPlayingAudio)
             {
@@ -185,6 +184,62 @@ namespace Navi
             {
                 volumeIcon.Source = new BitmapImage(new Uri("./Resources/volume-high.png", UriKind.Relative));
             }
+        }
+
+        private void NewLibraryButton_Click(object sender, RoutedEventArgs e)
+        {
+            var newLibWin = new NewLibrary_Window();
+            newLibWin.Owner = this;
+            newLibWin.Show();
+        }
+
+        private void AddSongButton_Click(object sender, RoutedEventArgs e)
+        {
+            
+        }
+
+        private void LibraryListView_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            Console.WriteLine("LibraryListView_SelectionChanged");
+        }
+
+        private void MusicListView_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            Console.WriteLine("MusicListView_SelectionChanged");
+        }
+
+        private void MoveUpLibrary_Click(object sender, RoutedEventArgs e)
+        {
+            if (libraryListView.SelectedIndex == 0) return;
+
+            var item = libraryList[libraryListView.SelectedIndex];
+            libraryList.RemoveAt(libraryListView.SelectedIndex);
+            libraryList.Insert(libraryListView.SelectedIndex - 1, item);
+            libraryListView.Items.Refresh();
+        }
+
+        private void MoveDownLibrary_Click(object sender, RoutedEventArgs e)
+        {
+            if (libraryListView.SelectedIndex == libraryList.Count - 1) return;
+
+            var item = libraryList[libraryListView.SelectedIndex];
+            libraryList.RemoveAt(libraryListView.SelectedIndex);
+            libraryList.Insert(libraryListView.SelectedIndex + 1, item);
+            libraryListView.Items.Refresh();
+        }
+
+        private void RenameLibrary_Click(object sender, RoutedEventArgs e)
+        {
+            var newLibWin = new NewLibrary_Window();
+            newLibWin.Owner = this;
+            newLibWin.Title = "Edit Library name";
+            newLibWin.Show();
+        }
+
+        private void DeleteLibrary_Click(object sender, RoutedEventArgs e)
+        {
+            libraryList.RemoveAt(libraryListView.SelectedIndex);
+            libraryListView.Items.Refresh();
         }
     }
 }

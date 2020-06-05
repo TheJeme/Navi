@@ -9,6 +9,7 @@
         Background="#162029"
         Height="450" Width="800"
         MinHeight="285" MinWidth="400">
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
@@ -24,38 +25,48 @@
 
                 <Grid.ContextMenu>
                     <ContextMenu>
-                        <MenuItem>
-                            <Label Content="bl"/>
-                        </MenuItem>
+                        <MenuItem Header="Play"/>
+                        <MenuItem Header="Pause"/>
+                        <MenuItem Header="Skip forward"/>
+                        <MenuItem Header="Skip backward"/>
+                        <MenuItem Header="Loop"/>
                     </ContextMenu>
                 </Grid.ContextMenu>
 
-                <ListView Background="#1f2029"
-                          x:Name="libraryListView"
+                <ListView x:Name="libraryListView" 
+                          Background="#1f2029"                          
                           BorderThickness="0"
                           VerticalAlignment="Top"
                           ScrollViewer.CanContentScroll="True"
                           ScrollViewer.VerticalScrollBarVisibility="Auto"
-                          VerticalContentAlignment="Top">
+                          VerticalContentAlignment="Top"
+                          SelectionChanged="LibraryListView_SelectionChanged">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <Viewbox>
-                                <Label x:Name="ListViewLabel" Content="{Binding}" Margin="10,0" Foreground="White" Height="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                                <Label x:Name="ListViewLabel"
+                                         Content="{Binding}"
+                                         Margin="15,0"
+                                         Foreground="White"
+                                         Height="30"
+                                         VerticalContentAlignment="Center"/>
                             </Viewbox>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                     
                     <ListView.ContextMenu>
                         <ContextMenu>
-                            <MenuItem>
-                                <Label Content="l"/>
-                            </MenuItem>
+                            <MenuItem Header="Move up" Click="MoveUpLibrary_Click"/>
+                            <MenuItem Header="Move down" Click="MoveDownLibrary_Click"/>
+                                <Separator />
+                            <MenuItem Header="Rename" Click="RenameLibrary_Click"/>
+                            <MenuItem Header="Delete" Click="DeleteLibrary_Click"/>
                         </ContextMenu>
                     </ListView.ContextMenu>
                 </ListView>
                 <StackPanel Grid.Row="1">
-                    <Button Height="45" Background="AliceBlue" Content="New library" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="24" />
-                    <Button Height="45" Background="AliceBlue" Content="New song" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="24" />
+                    <Button Height="45" Background="AliceBlue" Content="New library" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="24" Click="NewLibraryButton_Click"/>
+                    <Button Height="45" Background="AliceBlue" Content="Add song" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="24" Click="AddSongButton_Click"/>
                     <Border Background="#1D2F40" BorderBrush="White" BorderThickness="1">
                     <StackPanel>
 
@@ -74,7 +85,7 @@
                                 <Image Source="Resources/skipb.png"/>
                             </Border>
 
-                            <Border x:Name="playButton" Width="30" Height="30" Margin="5" Background="AliceBlue" CornerRadius="5" MouseLeftButtonUp="playButton_MouseLeftButtonUp" >
+                            <Border x:Name="playButton" Width="30" Height="30" Margin="5" Background="AliceBlue" CornerRadius="5" MouseLeftButtonUp="PlayButton_MouseLeftButtonUp" >
                                 <Image x:Name="playIcon" Source="Resources/play.png"/>
                             </Border>
 
@@ -100,7 +111,13 @@
         </Border>
 
 
-        <ListView x:Name="musicListView" Grid.Column="1" Background="Transparent" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" VerticalAlignment="Top">
+        <ListView x:Name="musicListView"
+                  Grid.Column="1"
+                  Background="Transparent"
+                  ScrollViewer.CanContentScroll="True"
+                  ScrollViewer.VerticalScrollBarVisibility="Auto"
+                  VerticalAlignment="Top"
+                  SelectionChanged="MusicListView_SelectionChanged">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <Setter Property="Foreground" Value="White"/>
@@ -124,7 +141,7 @@
         </ListView>
 
 
-        <DockPanel HorizontalAlignment="Center" Visibility="Collapsed">
+        <DockPanel x:Name="dockypanel" HorizontalAlignment="Center" Visibility="Collapsed">
             <Button x:Name="buttonSearch" Content="Download" Width="200" Height="40" Click="ButtonSearch_Click" VerticalAlignment="Top"/>
         </DockPanel>
         <Image x:Name="imgThumbnail" Visibility="Collapsed"/>
