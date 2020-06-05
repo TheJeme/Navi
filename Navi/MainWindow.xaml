@@ -8,20 +8,35 @@
         Title="Navi"
         Background="#162029"
         Height="450" Width="800"
-        MinHeight="450" MinWidth="400">
+        MinHeight="285" MinWidth="400">
     <Grid>
-        
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
+
         <Border Grid.Column="0" Background="#1f2029" BorderBrush="White" BorderThickness="1">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <ListView Background="#1f2029" x:Name="libraryListView" BorderThickness="0" VerticalAlignment="Top" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Top">
+
+                <Grid.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem>
+                            <Label Content="bl"/>
+                        </MenuItem>
+                    </ContextMenu>
+                </Grid.ContextMenu>
+
+                <ListView Background="#1f2029"
+                          x:Name="libraryListView"
+                          BorderThickness="0"
+                          VerticalAlignment="Top"
+                          ScrollViewer.CanContentScroll="True"
+                          ScrollViewer.VerticalScrollBarVisibility="Auto"
+                          VerticalContentAlignment="Top">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <Viewbox>
@@ -29,14 +44,25 @@
                             </Viewbox>
                         </DataTemplate>
                     </ListView.ItemTemplate>
+                    
+                    <ListView.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem>
+                                <Label Content="l"/>
+                            </MenuItem>
+                        </ContextMenu>
+                    </ListView.ContextMenu>
                 </ListView>
-                <Border Grid.Row="1" Background="#1D2F40" BorderBrush="White" BorderThickness="1">
+                <StackPanel Grid.Row="1">
+                    <Button Height="45" Background="AliceBlue" Content="New library" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="24" />
+                    <Button Height="45" Background="AliceBlue" Content="New song" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="24" />
+                    <Border Background="#1D2F40" BorderBrush="White" BorderThickness="1">
                     <StackPanel>
 
                         <Label Content="【MV】 鹿乃 「Stella-rium」 【OFFICIAL" Width="200" HorizontalContentAlignment="Center" Foreground="White"/>
 
                         <Slider Margin="10,5,10,0"/>
-                        <Label Content="13:43 / 26:73" FontSize="14" HorizontalContentAlignment="Center" Foreground="White"/>
+                        <Label x:Name="audioPositionLabel" Content="00:00:00 / 00:00:00" FontSize="14" HorizontalContentAlignment="Center" Foreground="White"/>
 
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
 
@@ -69,30 +95,38 @@
                         
                     </StackPanel>
                 </Border>
+                </StackPanel>
             </Grid>
         </Border>
 
 
-            <ListView x:Name="musicListView" Grid.Column="1" Background="Transparent" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" VerticalAlignment="Top">
-                <ListView.ItemContainerStyle>
-                    <Style TargetType="ListViewItem">
-                        <Setter Property="VerticalContentAlignment" Value="Top"/>
-                    </Style>
-                </ListView.ItemContainerStyle>
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn Header="Title" Width="480" DisplayMemberBinding="{Binding Path=Title}" />
-                        <GridViewColumn Header="Duration" Width="60" DisplayMemberBinding="{Binding Path=Duration}" />
-                    </GridView>
-                </ListView.View>
-            </ListView>
+        <ListView x:Name="musicListView" Grid.Column="1" Background="Transparent" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" VerticalAlignment="Top">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="Foreground" Value="White"/>
+                </Style>
+            </ListView.ItemContainerStyle>
+            
+            <ListView.ContextMenu>
+                <ContextMenu>
+                    <MenuItem>
+                        <Label Content="l"/>
+                    </MenuItem>
+                </ContextMenu>
+            </ListView.ContextMenu>
+            
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Title" Width="460" DisplayMemberBinding="{Binding Path=Title}" />
+                    <GridViewColumn Header="Duration" Width="60" DisplayMemberBinding="{Binding Path=Duration}" />
+                </GridView>
+            </ListView.View>
+        </ListView>
 
 
-            <DockPanel HorizontalAlignment="Center" Visibility="Collapsed">
-                <TextBox x:Name="txtBox" Width="200" Height="40"/>
-                <Button x:Name="buttonSearch" Content="Download" Width="200" Height="40" Click="ButtonSearch_Click"/>
-                <Label x:Name="labelResult" FontSize="12" Foreground="White"/>
-            </DockPanel>
+        <DockPanel HorizontalAlignment="Center" Visibility="Collapsed">
+            <Button x:Name="buttonSearch" Content="Download" Width="200" Height="40" Click="ButtonSearch_Click" VerticalAlignment="Top"/>
+        </DockPanel>
         <Image x:Name="imgThumbnail" Visibility="Collapsed"/>
 
     </Grid>

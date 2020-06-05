@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Windows;
+using System.Windows.Threading;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 using YoutubeExplode;
 using YoutubeExplode.Converter;
-
 
 namespace Navi
 {
@@ -23,79 +23,48 @@ namespace Navi
         
         private YoutubeClient youtube;
         private YoutubeConverter youtubeConverter;
-        private MediaPlayer mediaPlayer;        
+        private MediaPlayer mediaPlayer;
+
 
         private bool isPlayingAudio;
         private bool isLooping;
+        private bool isTimerEnabled;
 
         private readonly string youtubeID = "https://www.youtube.com/watch?v=_JL33DgClrI&list=RD_JL33DgClrI&start_radio=1";
 
         public MainWindow()
         {
-            InitializeComponent();
+            DispatcherTimer dt = new DispatcherTimer();
+            dt.Interval = TimeSpan.FromSeconds(1);
+            dt.Tick += dtTicker;
+            dt.Start();
 
             isPlayingAudio = false;
 
             youtube = new YoutubeClient();
             youtubeConverter = new YoutubeConverter(youtube);
 
+            mediaPlayer = new MediaPlayer();
+
             saa.Add("Content1");
             saa.Add("Content2");
-            saa.Add("Content1");
-            saa.Add("Content2");
-            saa.Add("Content1");
-            saa.Add("Content2");
-            saa.Add("Content1");
-            saa.Add("Content2");
-            saa.Add("Content1");
-            saa.Add("Content2");
-            saa.Add("Content1");
-            saa.Add("Content2");
-            saa.Add("Content2");
-            saa.Add("Content1");
-            saa.Add("Content2");
-            saa.Add("Content1");
-            saa.Add("Content2");
-            saa.Add("Content1");
-            saa.Add("Content2");
-            saa.Add("Content1");
-            saa.Add("Content2");
-            saa.Add("Content1");
-            saa.Add("Content2");
-            saa.Add("Content1");
-            saa.Add("Content2");
-            saa.Add("Content2");
-            saa.Add("Content1");
-            saa.Add("Content2");
-            saa.Add("Content1");
-            saa.Add("Content2");
-            saa.Add("Content1");
-            saa.Add("Content2");
-            saa.Add("Content1");
-            saa.Add("Content2");
-            saa.Add("Content1");
-            saa.Add("Content2");
-            saa.Add("Content1");
-            saa.Add("Content2");
-            saa.Add("Content2");
-            saa.Add("Content1");
-            saa.Add("Content2");
-            saa.Add("Content1");
-            saa.Add("Content2");
-            saa.Add("Content1");
-            saa.Add("Content2");
-            saa.Add("Content1");
-            saa.Add("Content2");
-            saa.Add("Content1");
-            saa.Add("Content2");
-            saa.Add("Content1");
-            saa.Add("Content2");
-            saa.Add("Content2");
+            saa.Add("Content3");
+
+            InitializeComponent();
 
             libraryListView.ItemsSource = saa;
-
-
+            musicListView.ItemsSource = musicList;
         }
+
+        private void dtTicker(object sender, EventArgs e)
+        {      
+            if (isTimerEnabled)
+            {
+                audioPositionLabel.Content = $"{mediaPlayer.Position.ToString().Split('.')[0]} / {musicList[0].Duration}";
+            }
+            buttonSearch.Content = (musicList.Count);
+        }
+
 
         private void checkLibraryStatus()
         {
@@ -114,13 +83,14 @@ namespace Navi
                 var video = await youtube.Videos.GetAsync(youtubeID);
                 
                 var title = cleanTitle(video.Title);
-                labelResult.Content = title;
                 imgThumbnail.Source = new BitmapImage(new Uri(video.Thumbnails.StandardResUrl));
 
                 checkLibraryStatus();
-                musicList.Add(video);
+                musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video);
+                musicListView.Items.Refresh();
                 var destinationPath = Path.Combine("./library/test1/", $"{title}.mp3");
                 downloadImageAndAudio(youtubeID, destinationPath, video);
+
 
             }
             catch (IOException)
@@ -155,16 +125,17 @@ namespace Navi
         {
             if (!isPlayingAudio)
             {
-                mediaPlayer = new MediaPlayer();
-                mediaPlayer.Volume = 0.05f;
-                mediaPlayer.Open(new Uri(Environment.CurrentDirectory + "/library/test1/Hanatan - Ghost Rule.mp3"));
+                mediaPlayer.Open(new Uri(Environment.CurrentDirectory + "/library/test1/Hanatan - Ghost Rule.mp3")); //TODO: MOVE FROM HERE
                 mediaPlayer.Play();
+
+                isTimerEnabled = true;
                 isPlayingAudio = true;
                 playIcon.Source = new BitmapImage(new Uri("./Resources/pause.png", UriKind.Relative));
             }
             else
             {
                 mediaPlayer.Pause();
+                isTimerEnabled = false;
                 isPlayingAudio = false;
                 playIcon.Source = new BitmapImage(new Uri("./Resources/play.png", UriKind.Relative));
             }
@@ -200,6 +171,8 @@ namespace Navi
 
         private void VolumeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
+            mediaPlayer.Volume = volumeSlider.Value;
+
             if (volumeSlider.Value == 0)
             {
                 volumeIcon.Source = new BitmapImage(new Uri("./Resources/volume-mute.png", UriKind.Relative));
