@@ -19,7 +19,7 @@ namespace Navi
     {
 
         public static List<string> libraryList = new List<string>();
-        public List<YoutubeExplode.Videos.Video> musicList = new List<YoutubeExplode.Videos.Video>();
+        public static List<YoutubeExplode.Videos.Video> musicList = new List<YoutubeExplode.Videos.Video>();
         
         private YoutubeClient youtube;
         private YoutubeConverter youtubeConverter;
@@ -74,9 +74,7 @@ namespace Navi
         }
 
         private async void ButtonSearch_Click(object sender, RoutedEventArgs e)
-        {
-            //if (txtBox.Text == "") return; TODO: COMMENT THIS OUT
-
+        {        
             try
             {
                 var video = await youtube.Videos.GetAsync(youtubeID);
@@ -195,12 +193,14 @@ namespace Navi
 
         private void AddSongButton_Click(object sender, RoutedEventArgs e)
         {
-            
+            var addSongWin = new AddSong_Window();
+            addSongWin.Owner = this;
+            addSongWin.Show();
         }
 
         private void LibraryListView_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            Console.WriteLine("LibraryListView_SelectionChanged");
+            addSongButton.IsEnabled = true;
         }
 
         private void MusicListView_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
