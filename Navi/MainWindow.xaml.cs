@@ -44,11 +44,11 @@ namespace Navi
             musicListView.ItemsSource = musicList;
         }
 
-        private void dtTicker(object sender, EventArgs e)
+        private void dtTicker(object sender, EventArgs e) // Updates Audioposition every second.
         {      
             if (isTimerEnabled)
             {
-                audioPositionLabel.Content = $"{mediaPlayer.Position.ToString().Split('.')[0]} / {musicList[0].Duration}";
+                audioPositionLabel.Content = $"{mediaPlayer.Position.ToString().Split('.')[0]} / {musicList[0].Duration}"; 
             }
         }
 
@@ -69,8 +69,11 @@ namespace Navi
         {
             foreach (var directoryPath in Directory.GetFiles($"./library/{libraryListView.SelectedValue.ToString()}/"))
             {
+                Console.WriteLine(directoryPath);
+                if (!directoryPath.EndsWith(".mp3")) continue; // Does not include anyother type files than mp3.
+
                 Mp3FileReader reader = new Mp3FileReader($"{directoryPath}");
-                string duration = reader.TotalTime.ToString().Split('.')[0];                
+                string duration = reader.TotalTime.ToString().Split('.')[0]; // Splits duration and takes milliseconds off.
                 musicList.Add(new MusicList { Title = new DirectoryInfo(directoryPath).Name.ToString(), Duration = duration });
             }
             musicListView.Items.Refresh();
@@ -78,6 +81,8 @@ namespace Navi
 
         private void PlayButton_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
+            if (musicListView.SelectedItem == null) return; // If not selected any item in the list then can't play it.
+
             if (!isPlayingAudio)
             {
                 mediaPlayer.Open(new Uri(Environment.CurrentDirectory + $"/library/{libraryListView.SelectedValue.ToString()}/{musicList[0].Title}"));
