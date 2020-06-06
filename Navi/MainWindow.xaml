@@ -113,7 +113,7 @@
                                 <Image Source="Resources/loop.png" Width="20" Height="20"/>
                             </Border>
 
-                            <Border Width="30" Height="30" Margin="5" Background="AliceBlue" CornerRadius="5">
+                                <Border Width="30" Height="30" Margin="5" Background="AliceBlue" CornerRadius="5" MouseLeftButtonUp="SkipBackward_MouseLeftButtonUp">
                                 <Image Source="Resources/skipb.png"/>
                             </Border>
 
@@ -121,7 +121,7 @@
                                 <Image x:Name="playIcon" Source="Resources/play.png"/>
                             </Border>
 
-                            <Border Width="30" Height="30" Margin="5" Background="AliceBlue" CornerRadius="5">
+                                <Border Width="30" Height="30" Margin="5" Background="AliceBlue" CornerRadius="5" MouseLeftButtonUp="SkipForward_MouseLeftButtonUp">
                                 <Image Source="Resources/skipf.png"/>
                             </Border>
 

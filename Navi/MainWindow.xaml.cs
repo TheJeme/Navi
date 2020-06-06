@@ -62,11 +62,8 @@ namespace Navi
                         mediaPlayer.Play();
                     }
                     else
-                    {                        
-                        currentPlayingIndex++;
-                        var mediaFile = new Uri(Environment.CurrentDirectory + $"/library/{libraryListView.SelectedValue.ToString()}/{musicList[currentPlayingIndex].Title}");
-                        mediaPlayer.Open(mediaFile);
-                        mediaPlayer.Play();
+                    {
+                        SkipForward();
                     }
                 }
             }
@@ -113,6 +110,22 @@ namespace Navi
                 loopMenuItem.IsChecked = true;
                 isLooping = true;
             }
+        }
+
+        private void SkipForward()
+        {
+            currentPlayingIndex++;
+            var mediaFile = new Uri(Environment.CurrentDirectory + $"/library/{libraryListView.SelectedValue.ToString()}/{musicList[currentPlayingIndex].Title}");
+            mediaPlayer.Open(mediaFile);
+            mediaPlayer.Play();
+        }
+
+        private void SkipBackward()
+        {
+            currentPlayingIndex--;
+            var mediaFile = new Uri(Environment.CurrentDirectory + $"/library/{libraryListView.SelectedValue.ToString()}/{musicList[currentPlayingIndex].Title}");
+            mediaPlayer.Open(mediaFile);
+            mediaPlayer.Play();
         }
 
         private void PlayMedia()
@@ -282,12 +295,12 @@ namespace Navi
 
         private void SkipForwardMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            currentPlayingIndex++;
+            SkipForward();
         }
 
         private void SkipBackwardMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            currentPlayingIndex--;
+            SkipBackward();
         }
 
         private void LoopMenuItem_Click(object sender, RoutedEventArgs e)
@@ -318,6 +331,16 @@ namespace Navi
         private void Volume0MenuItem_Click(object sender, RoutedEventArgs e)
         {
             volumeSlider.Value = 0;
+        }
+
+        private void SkipForward_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            SkipForward();
+        }
+
+        private void SkipBackward_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            SkipBackward();
         }
     }
 }
