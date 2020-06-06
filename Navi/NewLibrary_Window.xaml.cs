@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Windows;
 
@@ -20,23 +21,35 @@ namespace Navi
         }
 
         private void OkButton_Click(object sender, RoutedEventArgs e)
-        { 
+        {
+            var libraryName = LibNameLabel.Text;
             if (window.Title == "Create new Library")
             {
-                if (LibNameLabel.Text.Length == 0)
-                    MainWindow.libraryList.Add($"New library {MainWindow.libraryList.Count + 1}");
+                if (libraryName.Length == 0) return;
+
+                if (!Directory.Exists("./library/" + libraryName))
+                {
+                    MainWindow.libraryList.Add(libraryName);
+
+                    Directory.CreateDirectory("./library/" + libraryName);
+                    (this.Owner as MainWindow).libraryListView.Items.Refresh();
+                    this.Close();
+                }
                 else
-                    MainWindow.libraryList.Add(LibNameLabel.Text);
+                {
+                    MessageBox.Show("Library already exists with that name.", "Error");
+                }
             }
             else
             {
-                if (LibNameLabel.Text.Length == 0)
-                    MainWindow.libraryList[(this.Owner as MainWindow).libraryListView.SelectedIndex] = ("Unnamed library");
-                else
-                    MainWindow.libraryList[(this.Owner as MainWindow).libraryListView.SelectedIndex] = LibNameLabel.Text;
+                if (libraryName.Length == 0) return;
+
+                //TODO
+
+                MainWindow.libraryList[(this.Owner as MainWindow).libraryListView.SelectedIndex] = libraryName;
+                (this.Owner as MainWindow).libraryListView.Items.Refresh();
+                this.Close();
             }
-            (this.Owner as MainWindow).libraryListView.Items.Refresh();
-            this.Close();
         }
     }
 }

@@ -40,14 +40,12 @@ namespace Navi
             try
             {
                 var video = await youtube.Videos.GetAsync(youtubeID);
-
-                (this.Owner as MainWindow).imgThumbnail.Source = new BitmapImage(new Uri(video.Thumbnails.StandardResUrl));
-
+                var title = CleanTitle(video.Title);
                 CheckLibraryStatus();
                 MainWindow.musicList.Add(video);
                 (this.Owner as MainWindow).musicListView.Items.Refresh();
-                var destinationPath = Path.Combine("./library/test1/", $"{video.Title}.mp3");
-                DownloadImageAndAudio(youtubeID, destinationPath, video);
+                var destinationPath = Path.Combine($"./library/{(this.Owner as MainWindow).libraryListView.SelectedValue.ToString()}/", $"{title}.mp3");
+                DownloadAudio(youtubeID, destinationPath, video);
 
                 (this.Owner as MainWindow).libraryListView.Items.Refresh();
             }
@@ -81,12 +79,12 @@ namespace Navi
             return string.Join("_", title.Split(Path.GetInvalidFileNameChars()));
         }
 
-        private async void DownloadImageAndAudio(string youtubeID, string destinationPath, YoutubeExplode.Videos.Video video)
+        private async void DownloadAudio(string youtubeID, string destinationPath, YoutubeExplode.Videos.Video video)
         {
-            using (WebClient webClient = new WebClient())
-            {
-                webClient.DownloadFileAsync(new Uri(video.Thumbnails.StandardResUrl), $"./library/test1/{video.Title}.png");
-            }
+            //using (WebClient webClient = new WebClient())
+            //{
+            //    webClient.DownloadFileAsync(new Uri(video.Thumbnails.StandardResUrl), $"./library/{}/{video.Title}.png");
+            //}
             await youtubeConverter.DownloadVideoAsync(youtubeID, destinationPath);
         }
     }

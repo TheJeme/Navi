@@ -21,16 +21,12 @@ namespace Navi
         public static List<string> libraryList = new List<string>();
         public static List<YoutubeExplode.Videos.Video> musicList = new List<YoutubeExplode.Videos.Video>();
         
-        private YoutubeClient youtube;
-        private YoutubeConverter youtubeConverter;
         private MediaPlayer mediaPlayer;
 
 
         private bool isPlayingAudio;
         private bool isLooping;
         private bool isTimerEnabled;
-
-        private readonly string youtubeID = "https://www.youtube.com/watch?v=_JL33DgClrI&list=RD_JL33DgClrI&start_radio=1";
 
         public MainWindow()
         {
@@ -41,14 +37,9 @@ namespace Navi
 
             isPlayingAudio = false;
 
-            youtube = new YoutubeClient();
-            youtubeConverter = new YoutubeConverter(youtube);
-
             mediaPlayer = new MediaPlayer();
 
-            libraryList.Add("My library");
-
-
+            CheckLibraryStatus();
             InitializeComponent();
 
             libraryListView.ItemsSource = libraryList;
@@ -61,7 +52,6 @@ namespace Navi
             {
                 audioPositionLabel.Content = $"{mediaPlayer.Position.ToString().Split('.')[0]} / {musicList[0].Duration}";
             }
-            buttonSearch.Content = (musicList.Count);
         }
 
 
@@ -71,36 +61,18 @@ namespace Navi
             {
                 Directory.CreateDirectory("./library");
             }
+
+            foreach (var directoryPath in Directory.GetDirectories("./library/"))
+            {
+                libraryList.Add(new DirectoryInfo(directoryPath).Name);
+            }
         }
 
-        private async void ButtonSearch_Click(object sender, RoutedEventArgs e)
-        {        
-            try
+        private void CheckSongStatus()
+        {
+            foreach (var directoryPath in Directory.GetDirectories($"./library/{libraryListView.SelectedValue.ToString()}"))
             {
-                var video = await youtube.Videos.GetAsync(youtubeID);
-                
-                var title = CleanTitle(video.Title);
-                imgThumbnail.Source = new BitmapImage(new Uri(video.Thumbnails.StandardResUrl));
 
-                CheckLibraryStatus();
-                musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video); musicList.Add(video);
-                musicListView.Items.Refresh();
-                var destinationPath = Path.Combine("./library/test1/", $"{title}.mp3");
-                DownloadImageAndAudio(youtubeID, destinationPath, video);
-
-
-            }
-            catch (IOException)
-            {
-                MessageBox.Show("The song is already in the library", "Error");
-            }
-            catch (InvalidOperationException)
-            {
-                MessageBox.Show("SOMETHING HAPPANED", "Error"); //TODO: FIX ERRORGHANDLING
-            }
-            catch (Exception er)
-            {
-                MessageBox.Show("Invalid Youtube video id or url.", er.ToString());
             }
         }
 
@@ -109,22 +81,13 @@ namespace Navi
             return string.Join("_", title.Split(Path.GetInvalidFileNameChars()));
         }
 
-        private async void DownloadImageAndAudio(string youtubeID, string destinationPath, YoutubeExplode.Videos.Video video)
-        {
-           using (WebClient webClient = new WebClient())
-           { 
-               webClient.DownloadFileAsync(new Uri(video.Thumbnails.StandardResUrl), $"./library/test1/{video.Title}.png");
-           }
-           await youtubeConverter.DownloadVideoAsync(youtubeID, destinationPath);
-        }
-
         private void PlayButton_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             if (!isPlayingAudio)
             {
-                mediaPlayer.Open(new Uri(Environment.CurrentDirectory + "/library/test1/Hanatan - Ghost Rule.mp3")); //TODO: MOVE FROM HERE
+                mediaPlayer.Open(new Uri(Environment.CurrentDirectory + $"/library/{libraryListView.SelectedValue.ToString()}/{musicList[0].Title}.mp3"));
                 mediaPlayer.Play();
-
+                
                 isTimerEnabled = true;
                 isPlayingAudio = true;
                 playIcon.Source = new BitmapImage(new Uri("./Resources/pause.png", UriKind.Relative));
@@ -201,6 +164,8 @@ namespace Navi
         private void LibraryListView_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             addSongButton.IsEnabled = true;
+
+            CheckSongStatus();
         }
 
         private void MusicListView_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
@@ -238,8 +203,29 @@ namespace Navi
 
         private void DeleteLibrary_Click(object sender, RoutedEventArgs e)
         {
-            libraryList.RemoveAt(libraryListView.SelectedIndex);
-            libraryListView.Items.Refresh();
+            if (!Directory.Exists("./library/" + libraryListView.SelectedValue.ToString())) return;
+
+            if (Directory.GetFileSystemEntries("./library/" + libraryListView.SelectedValue.ToString()).Length == 0)
+            {
+                Directory.Delete("./library/" + libraryListView.SelectedValue.ToString(), true);
+                libraryList.RemoveAt(libraryListView.SelectedIndex);
+                libraryListView.Items.Refresh();
+                addSongButton.IsEnabled = false;
+            }
+            else
+            {
+                if (MessageBox.Show("Are you sure you want to delete the library?", "Navi", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
+                {
+                    return;
+                }
+                else
+                {
+                    Directory.Delete("./library/" + libraryListView.SelectedValue.ToString(), true);
+                    libraryList.RemoveAt(libraryListView.SelectedIndex);
+                    libraryListView.Items.Refresh();
+                    addSongButton.IsEnabled = false;
+                }
+            }
         }
 
         private void PlayMenuItem_Click(object sender, RoutedEventArgs e)
@@ -282,22 +268,22 @@ namespace Navi
 
         private void Volume100MenuItem_Click(object sender, RoutedEventArgs e)
         {
-            volumeSlider.Value = 0.1;
+            volumeSlider.Value = volumeSlider.Maximum;
         }
 
         private void Volume75MenuItem_Click(object sender, RoutedEventArgs e)
         {
-            volumeSlider.Value = 0.075;
+            volumeSlider.Value = volumeSlider.Maximum * 0.75f;
         }
 
         private void Volume50MenuItem_Click(object sender, RoutedEventArgs e)
         {
-            volumeSlider.Value = 0.05;
+            volumeSlider.Value = volumeSlider.Maximum * 0.5f;
         }
 
         private void Volume25MenuItem_Click(object sender, RoutedEventArgs e)
         {
-            volumeSlider.Value = 0.025;
+            volumeSlider.Value = volumeSlider.Maximum * 0.25f;
         }
 
         private void Volume0MenuItem_Click(object sender, RoutedEventArgs e)
