@@ -50,19 +50,23 @@ namespace Navi
         {      
             if (isTimerEnabled)
             {
-                audioPositionLabel.Content = $"{mediaPlayer.Position.ToString().Split('.')[0]} / {musicList[currentPlayingIndex].Duration}"; 
+                audioPositionLabel.Content = $"{mediaPlayer.Position.ToString(@"hh\:mm\:ss")} / {musicList[currentPlayingIndex].Duration}"; 
 
-                if (mediaPlayer.Position.ToString().Split('.')[0] == musicList[currentPlayingIndex].Duration)
+                if (mediaPlayer.Position >= musicList[currentPlayingIndex].Duration)
                 {
+                    mediaPlayer.Pause();
+
                     if (isLooping)
                     {
                         mediaPlayer.Position = TimeSpan.Zero;
+                        mediaPlayer.Play();
                     }
                     else
-                    {
+                    {                        
                         currentPlayingIndex++;
                         var mediaFile = new Uri(Environment.CurrentDirectory + $"/library/{libraryListView.SelectedValue.ToString()}/{musicList[currentPlayingIndex].Title}");
                         mediaPlayer.Open(mediaFile);
+                        mediaPlayer.Play();
                     }
                 }
             }
@@ -89,8 +93,8 @@ namespace Navi
                 if (!directoryPath.EndsWith(".mp3")) continue; // Does not include anyother type files than mp3.
 
                 Mp3FileReader reader = new Mp3FileReader($"{directoryPath}");
-                string duration = reader.TotalTime.ToString().Split('.')[0]; // Splits duration and takes milliseconds off.
-                musicList.Add(new MusicList { Title = new DirectoryInfo(directoryPath).Name.ToString(), Duration = duration });
+                string duration = reader.TotalTime.ToString(@"hh\:mm\:ss");
+                musicList.Add(new MusicList { Title = new DirectoryInfo(directoryPath).Name.ToString(), Duration = TimeSpan.Parse(duration) });
             }
             musicListView.Items.Refresh();
         }
@@ -115,13 +119,14 @@ namespace Navi
         {
             if (musicListView.SelectedItem == null) return; // If not selected any item in the list then can't play it.
 
-            currentPlayingIndex = musicListView.SelectedIndex;
-            currentPlayingLabel.Content = musicList[currentPlayingIndex].Title;
-
             if (!isPlayingAudio)
             {
+                currentPlayingIndex = musicListView.SelectedIndex;
+                currentPlayingLabel.Content = musicList[currentPlayingIndex].Title;
+
                 var mediaFile = new Uri(Environment.CurrentDirectory + $"/library/{libraryListView.SelectedValue.ToString()}/{musicList[currentPlayingIndex].Title}");
                 mediaPlayer.Open(mediaFile);
+
                 mediaPlayer.Play();
 
                 playMenuItem.IsEnabled = false;
@@ -202,7 +207,7 @@ namespace Navi
         {
             addSongButton.IsEnabled = true;
 
-            CheckSongStatus();
+            if (libraryListView.SelectedItem != null) CheckSongStatus();
         }
 
         private void MusicListView_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)

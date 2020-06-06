@@ -102,7 +102,7 @@
                     <Border Background="#1D2F40" BorderBrush="White" BorderThickness="1">
                     <StackPanel>
 
-                        <Label x:Name="currentPlayingLabel" Width="200" HorizontalContentAlignment="Center" Foreground="White"/>
+                        <Label x:Name="currentPlayingLabel" Content="" Width="200" HorizontalContentAlignment="Center" Foreground="White"/>
 
                         <Slider Margin="10,5,10,0"/>
                         <Label x:Name="audioPositionLabel" Content="00:00:00 / 00:00:00" FontSize="14" HorizontalContentAlignment="Center" Foreground="White"/>

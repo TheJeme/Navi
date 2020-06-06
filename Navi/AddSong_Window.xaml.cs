@@ -42,7 +42,7 @@ namespace Navi
                 var video = await youtube.Videos.GetAsync(youtubeID);
                 var title = CleanTitle(video.Title);
                 CheckLibraryStatus();
-                MainWindow.musicList.Add(new MusicList { Title = video.Title, Duration = video.Duration.ToString()});
+                MainWindow.musicList.Add(new MusicList { Title = video.Title, Duration = video.Duration});
                 (this.Owner as MainWindow).musicListView.Items.Refresh();
                 var destinationPath = Path.Combine($"./library/{(this.Owner as MainWindow).libraryListView.SelectedValue.ToString()}/", $"{title}.mp3");
                 DownloadAudio(youtubeID, destinationPath, video);
