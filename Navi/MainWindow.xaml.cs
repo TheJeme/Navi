@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
 using System.Windows;
 using System.Windows.Threading;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-using YoutubeExplode;
-using YoutubeExplode.Converter;
+using NAudio.Wave;
 
 namespace Navi
 {
@@ -19,7 +17,7 @@ namespace Navi
     {
 
         public static List<string> libraryList = new List<string>();
-        public static List<YoutubeExplode.Videos.Video> musicList = new List<YoutubeExplode.Videos.Video>();
+        public static List<MusicList> musicList = new List<MusicList>();
         
         private MediaPlayer mediaPlayer;
 
@@ -54,7 +52,6 @@ namespace Navi
             }
         }
 
-
         private void CheckLibraryStatus()
         {
             if (!Directory.Exists("./library"))
@@ -70,22 +67,20 @@ namespace Navi
 
         private void CheckSongStatus()
         {
-            foreach (var directoryPath in Directory.GetDirectories($"./library/{libraryListView.SelectedValue.ToString()}"))
+            foreach (var directoryPath in Directory.GetFiles($"./library/{libraryListView.SelectedValue.ToString()}/"))
             {
-
+                Mp3FileReader reader = new Mp3FileReader($"{directoryPath}");
+                string duration = reader.TotalTime.ToString().Split('.')[0];                
+                musicList.Add(new MusicList { Title = new DirectoryInfo(directoryPath).Name.ToString(), Duration = duration });
             }
-        }
-
-        private string CleanTitle(string title)
-        {
-            return string.Join("_", title.Split(Path.GetInvalidFileNameChars()));
+            musicListView.Items.Refresh();
         }
 
         private void PlayButton_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             if (!isPlayingAudio)
             {
-                mediaPlayer.Open(new Uri(Environment.CurrentDirectory + $"/library/{libraryListView.SelectedValue.ToString()}/{musicList[0].Title}.mp3"));
+                mediaPlayer.Open(new Uri(Environment.CurrentDirectory + $"/library/{libraryListView.SelectedValue.ToString()}/{musicList[0].Title}"));
                 mediaPlayer.Play();
                 
                 isTimerEnabled = true;

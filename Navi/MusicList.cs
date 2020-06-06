@@ -1,8 +1,8 @@
 ﻿namespace Navi
 {
-    class MusicList
+    public class MusicList
     {
         public string Title { get; set; }
-        public bool Duration { get; set; }
+        public string Duration { get; set; }
     }
 }
