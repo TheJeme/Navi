@@ -241,5 +241,68 @@ namespace Navi
             libraryList.RemoveAt(libraryListView.SelectedIndex);
             libraryListView.Items.Refresh();
         }
+
+        private void PlayMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            playMenuItem.IsEnabled = false;
+            pauseMenuItem.IsEnabled = true;
+
+            mediaPlayer.Play();
+        }
+
+        private void PauseMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            playMenuItem.IsEnabled = true;
+            pauseMenuItem.IsEnabled = false;
+
+            mediaPlayer.Pause();
+        }
+
+        private void SkipForwardMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            //TODO
+        }
+
+        private void SkipBackwardMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            //TODO
+        }
+
+        private void LoopMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (loopMenuItem.IsChecked)
+            {
+                loopMenuItem.IsChecked = false;
+            }
+            else
+            {
+                loopMenuItem.IsChecked = true;
+            }
+        }
+
+        private void Volume100MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            volumeSlider.Value = 0.1;
+        }
+
+        private void Volume75MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            volumeSlider.Value = 0.075;
+        }
+
+        private void Volume50MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            volumeSlider.Value = 0.05;
+        }
+
+        private void Volume25MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            volumeSlider.Value = 0.025;
+        }
+
+        private void Volume0MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            volumeSlider.Value = 0;
+        }
     }
 }

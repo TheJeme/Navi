@@ -25,11 +25,43 @@
 
                 <Grid.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="Play"/>
-                        <MenuItem Header="Pause"/>
-                        <MenuItem Header="Skip forward"/>
-                        <MenuItem Header="Skip backward"/>
-                        <MenuItem Header="Loop"/>
+                        <MenuItem x:Name="playMenuItem" Header="Play" Click="PlayMenuItem_Click">
+                            <MenuItem.Icon>
+                                <Image Source="Resources/play.png" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem x:Name="pauseMenuItem" Header="Pause" IsEnabled="False" Click="PauseMenuItem_Click">
+                            <MenuItem.Icon>
+                                <Image Source="Resources/pause.png" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <Separator />
+                        <MenuItem Header="Skip forward" Click="SkipForwardMenuItem_Click">
+                            <MenuItem.Icon>
+                                <Image Source="Resources/skipf.png" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Skip backward" Click="SkipBackwardMenuItem_Click">
+                            <MenuItem.Icon>
+                                <Image Source="Resources/skipb.png" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <Separator />
+                        <MenuItem x:Name="loopMenuItem" Header="Loop" IsCheckable="True" Click="LoopMenuItem_Click">
+                            <MenuItem.Icon>
+                                <Image Source="Resources/loop.png" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Volume">
+                            <MenuItem.Icon>
+                                <Image Source="Resources/volume-low.png" />
+                            </MenuItem.Icon>
+                            <Label Content="100%" MouseLeftButtonUp="Volume100MenuItem_Click"/>
+                            <Label Content="75%" MouseLeftButtonUp="Volume75MenuItem_Click"/>
+                            <Label Content="50%" MouseLeftButtonUp="Volume50MenuItem_Click"/>
+                            <Label Content="25%" MouseLeftButtonUp="Volume25MenuItem_Click"/>
+                            <Label Content="0%" MouseLeftButtonUp="Volume0MenuItem_Click"/>
+                        </MenuItem>
                     </ContextMenu>
                 </Grid.ContextMenu>
 
@@ -127,7 +159,10 @@
             <ListView.ContextMenu>
                 <ContextMenu>
                     <MenuItem>
-                        <Label Content="l"/>
+                        <Label Content="Move up"/>
+                        <Label Content="Move down"/>
+                            <Separator />
+                        <Label Content="Delete"/>
                     </MenuItem>
                 </ContextMenu>
             </ListView.ContextMenu>
