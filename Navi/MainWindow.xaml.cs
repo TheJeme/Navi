@@ -17,14 +17,16 @@ namespace Navi
     {
 
         public static List<string> libraryList = new List<string>();
+        public static List<MusicList> currentlyPlayingMusicList = new List<MusicList>();
         public static List<MusicList> musicList = new List<MusicList>();
         
         private MediaPlayer mediaPlayer;
 
-
         private bool isPlayingAudio;
         private bool isLooping;
         private bool isTimerEnabled;
+
+        private int currentPlayingIndex;
 
         public MainWindow()
         {
@@ -48,7 +50,21 @@ namespace Navi
         {      
             if (isTimerEnabled)
             {
-                audioPositionLabel.Content = $"{mediaPlayer.Position.ToString().Split('.')[0]} / {musicList[0].Duration}"; 
+                audioPositionLabel.Content = $"{mediaPlayer.Position.ToString().Split('.')[0]} / {musicList[currentPlayingIndex].Duration}"; 
+
+                if (mediaPlayer.Position.ToString().Split('.')[0] == musicList[currentPlayingIndex].Duration)
+                {
+                    if (isLooping)
+                    {
+                        mediaPlayer.Position = TimeSpan.Zero;
+                    }
+                    else
+                    {
+                        currentPlayingIndex++;
+                        var mediaFile = new Uri(Environment.CurrentDirectory + $"/library/{libraryListView.SelectedValue.ToString()}/{musicList[currentPlayingIndex].Title}");
+                        mediaPlayer.Open(mediaFile);
+                    }
+                }
             }
         }
 
@@ -79,15 +95,37 @@ namespace Navi
             musicListView.Items.Refresh();
         }
 
-        private void PlayButton_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void Loop()
+        {
+            if (isLooping)
+            {
+                loopButton.Background = Brushes.Gray;
+                loopMenuItem.IsChecked = false;
+                isLooping = false;
+            }
+            else
+            {
+                loopButton.Background = Brushes.AliceBlue;
+                loopMenuItem.IsChecked = true;
+                isLooping = true;
+            }
+        }
+
+        private void PlayMedia()
         {
             if (musicListView.SelectedItem == null) return; // If not selected any item in the list then can't play it.
 
+            currentPlayingIndex = musicListView.SelectedIndex;
+            currentPlayingLabel.Content = musicList[currentPlayingIndex].Title;
+
             if (!isPlayingAudio)
             {
-                mediaPlayer.Open(new Uri(Environment.CurrentDirectory + $"/library/{libraryListView.SelectedValue.ToString()}/{musicList[0].Title}"));
+                var mediaFile = new Uri(Environment.CurrentDirectory + $"/library/{libraryListView.SelectedValue.ToString()}/{musicList[currentPlayingIndex].Title}");
+                mediaPlayer.Open(mediaFile);
                 mediaPlayer.Play();
-                
+
+                playMenuItem.IsEnabled = false;
+                pauseMenuItem.IsEnabled = true;
                 isTimerEnabled = true;
                 isPlayingAudio = true;
                 playIcon.Source = new BitmapImage(new Uri("./Resources/pause.png", UriKind.Relative));
@@ -95,10 +133,18 @@ namespace Navi
             else
             {
                 mediaPlayer.Pause();
+
+                playMenuItem.IsEnabled = true;
+                pauseMenuItem.IsEnabled = false;
                 isTimerEnabled = false;
                 isPlayingAudio = false;
                 playIcon.Source = new BitmapImage(new Uri("./Resources/play.png", UriKind.Relative));
             }
+        }
+
+        private void PlayButton_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            PlayMedia();
         }
 
         private void VolumeButton_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -117,16 +163,7 @@ namespace Navi
 
         private void LoopButton_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            if (isLooping)
-            {
-                loopButton.Background = Brushes.Gray;
-                isLooping = false;
-            }
-            else
-            {
-                loopButton.Background = Brushes.AliceBlue;
-                isLooping = true;
-            }
+            Loop();
         }
 
         private void VolumeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -230,40 +267,27 @@ namespace Navi
 
         private void PlayMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            playMenuItem.IsEnabled = false;
-            pauseMenuItem.IsEnabled = true;
-
-            mediaPlayer.Play();
+            PlayMedia();
         }
 
         private void PauseMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            playMenuItem.IsEnabled = true;
-            pauseMenuItem.IsEnabled = false;
-
-            mediaPlayer.Pause();
+            PlayMedia();
         }
 
         private void SkipForwardMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            //TODO
+            currentPlayingIndex++;
         }
 
         private void SkipBackwardMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            //TODO
+            currentPlayingIndex--;
         }
 
         private void LoopMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            if (loopMenuItem.IsChecked)
-            {
-                loopMenuItem.IsChecked = false;
-            }
-            else
-            {
-                loopMenuItem.IsChecked = true;
-            }
+            Loop();
         }
 
         private void Volume100MenuItem_Click(object sender, RoutedEventArgs e)

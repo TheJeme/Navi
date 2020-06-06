@@ -102,7 +102,7 @@
                     <Border Background="#1D2F40" BorderBrush="White" BorderThickness="1">
                     <StackPanel>
 
-                        <Label Content="【MV】 鹿乃 「Stella-rium」 【OFFICIAL" Width="200" HorizontalContentAlignment="Center" Foreground="White"/>
+                        <Label x:Name="currentPlayingLabel" Width="200" HorizontalContentAlignment="Center" Foreground="White"/>
 
                         <Slider Margin="10,5,10,0"/>
                         <Label x:Name="audioPositionLabel" Content="00:00:00 / 00:00:00" FontSize="14" HorizontalContentAlignment="Center" Foreground="White"/>
@@ -133,7 +133,7 @@
 
                         <StackPanel x:Name="volumePanel" Visibility="Collapsed" Orientation="Horizontal" HorizontalAlignment="Center">
                             <Label Content="Volume:" Foreground="White"/>
-                            <Slider x:Name="volumeSlider" Value="0.05" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Right" Width="120" Minimum="0" Maximum="0.2" ValueChanged="VolumeSlider_ValueChanged"/>
+                            <Slider x:Name="volumeSlider" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Right" Width="120" Value="0.1" Minimum="0" Maximum="0.2" ValueChanged="VolumeSlider_ValueChanged"/>
                         </StackPanel>
                         
                     </StackPanel>
@@ -158,12 +158,10 @@
 
             <ListView.ContextMenu>
                 <ContextMenu>
-                    <MenuItem>
-                        <Label Content="Move up"/>
-                        <Label Content="Move down"/>
-                        <Separator />
-                        <Label Content="Delete"/>
-                    </MenuItem>
+                    <MenuItem Header="Randomize"/>
+                    <Separator />
+                    <MenuItem Header="Rename"/>
+                    <MenuItem Header="Delete"/>
                 </ContextMenu>
             </ListView.ContextMenu>
 
