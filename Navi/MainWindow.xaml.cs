@@ -359,7 +359,7 @@ namespace Navi
 
         private void AudioPositionSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-
+            mediaPlayer.Position = TimeSpan.FromSeconds(audioPositionSlider.Value);
         }
     }
 }
