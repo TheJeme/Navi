@@ -18,7 +18,7 @@ namespace Navi
 
         public static List<string> libraryList = new List<string>();
         public static List<MusicList> currentlyPlayingMusicList = new List<MusicList>();
-        public static List<MusicList> musicList = new List<MusicList>();
+        public static List<MusicList> currentlyViewingMusicList = new List<MusicList>();
         
         private MediaPlayer mediaPlayer;
 
@@ -43,18 +43,18 @@ namespace Navi
             InitializeComponent();
 
             libraryListView.ItemsSource = libraryList;
-            musicListView.ItemsSource = musicList;
+            musicListView.ItemsSource = currentlyViewingMusicList;
         }
 
         private void dtTicker(object sender, EventArgs e) // Updates Audioposition every second.
         {      
             if (isTimerEnabled)
             {
-                audioPositionLabel.Content = $"{mediaPlayer.Position.ToString(@"hh\:mm\:ss")} / {musicList[currentPlayingIndex].Duration}";
-                audioPositionSlider.Maximum = musicList[currentPlayingIndex].Duration.TotalSeconds;
+                audioPositionLabel.Content = $"{mediaPlayer.Position.ToString(@"hh\:mm\:ss")} / {currentlyPlayingMusicList[currentPlayingIndex].Duration}";
+                audioPositionSlider.Maximum = currentlyPlayingMusicList[currentPlayingIndex].Duration.TotalSeconds;
                 audioPositionSlider.Value = mediaPlayer.Position.TotalSeconds;
 
-                if (mediaPlayer.Position >= musicList[currentPlayingIndex].Duration)
+                if (mediaPlayer.Position >= currentlyPlayingMusicList[currentPlayingIndex].Duration)
                 {
                     mediaPlayer.Pause();
                     audioPositionSlider.Value = 0;
@@ -86,6 +86,8 @@ namespace Navi
 
         private void CheckSongStatus()
         {
+            currentlyViewingMusicList.Clear();
+
             foreach (var directoryPath in Directory.GetFiles($"./library/{libraryListView.SelectedValue.ToString()}/"))
             {
                 Console.WriteLine(directoryPath);
@@ -93,7 +95,7 @@ namespace Navi
 
                 Mp3FileReader reader = new Mp3FileReader($"{directoryPath}");
                 string duration = reader.TotalTime.ToString(@"hh\:mm\:ss");
-                musicList.Add(new MusicList { Title = new DirectoryInfo(directoryPath).Name.ToString(), Duration = TimeSpan.Parse(duration) });
+                currentlyViewingMusicList.Add(new MusicList { Title = new DirectoryInfo(directoryPath).Name.ToString(), Duration = TimeSpan.Parse(duration) });
             }
             musicListView.Items.Refresh();
         }
@@ -116,16 +118,16 @@ namespace Navi
 
         private void SkipForward()
         {
-            if (currentPlayingIndex == musicList.Count - 1) return;
+            if (currentPlayingIndex == currentlyPlayingMusicList.Count - 1) return;
 
             currentPlayingIndex++;
-            var mediaFile = new Uri(Environment.CurrentDirectory + $"/library/{libraryListView.SelectedValue.ToString()}/{musicList[currentPlayingIndex].Title}");
+            var mediaFile = new Uri(Environment.CurrentDirectory + $"/library/{libraryListView.SelectedValue.ToString()}/{currentlyPlayingMusicList[currentPlayingIndex].Title}");
             mediaPlayer.Open(mediaFile);
             if (isPlayingAudio)
             {
                 mediaPlayer.Play();
             }
-            currentPlayingLabel.Content = musicList[currentPlayingIndex].Title;
+            currentPlayingLabel.Content = currentlyPlayingMusicList[currentPlayingIndex].Title;
         }
 
         private void SkipBackward()
@@ -133,26 +135,34 @@ namespace Navi
             if (currentPlayingIndex == 0) return;
 
             currentPlayingIndex--;
-            var mediaFile = new Uri(Environment.CurrentDirectory + $"/library/{libraryListView.SelectedValue.ToString()}/{musicList[currentPlayingIndex].Title}");
+            var mediaFile = new Uri(Environment.CurrentDirectory + $"/library/{libraryListView.SelectedValue.ToString()}/{currentlyPlayingMusicList[currentPlayingIndex].Title}");
             mediaPlayer.Open(mediaFile);
             if (isPlayingAudio)
             {
                 mediaPlayer.Play();
             }
-            currentPlayingLabel.Content = musicList[currentPlayingIndex].Title;
+            currentPlayingLabel.Content = currentlyPlayingMusicList[currentPlayingIndex].Title;
         }
 
         private void PlayMedia()
         {
-            if (musicListView.SelectedItem == null) return; // If not selected any item in the list then can't play it.
-
             if (!isPlayingAudio)
             {
-                currentPlayingIndex = musicListView.SelectedIndex;
-                currentPlayingLabel.Content = musicList[currentPlayingIndex].Title;
+                if (musicListView.Items.Count != 0 && musicListView.SelectedItem != null)
+                {
+                    if (currentPlayingLabel.Content.ToString() != currentlyViewingMusicList[musicListView.SelectedIndex].Title)
+                    {
 
-                var mediaFile = new Uri(Environment.CurrentDirectory + $"/library/{libraryListView.SelectedValue.ToString()}/{musicList[currentPlayingIndex].Title}");
-                mediaPlayer.Open(mediaFile);
+                        currentlyPlayingMusicList.Clear();
+                        currentlyPlayingMusicList = new List<MusicList>(currentlyViewingMusicList);
+                        currentPlayingIndex = musicListView.SelectedIndex;
+                        currentPlayingLabel.Content = currentlyPlayingMusicList[currentPlayingIndex].Title;
+
+                        var mediaFile = new Uri(Environment.CurrentDirectory + $"/library/{libraryListView.SelectedValue.ToString()}/{currentlyPlayingMusicList[currentPlayingIndex].Title}");
+                        mediaPlayer.Open(mediaFile);
+                    }
+                }
+                if (currentlyPlayingMusicList.Count == 0) return;
 
                 mediaPlayer.Play();
 
@@ -360,6 +370,23 @@ namespace Navi
         private void AudioPositionSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             mediaPlayer.Position = TimeSpan.FromSeconds(audioPositionSlider.Value);
+        }
+
+        private void RandomizeSongMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void RenameSongMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void DeleteSongMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            File.Delete($"./library/{libraryListView.SelectedValue.ToString()}/{currentlyViewingMusicList[musicListView.SelectedIndex].Title}");
+            currentlyViewingMusicList.RemoveAt(musicListView.SelectedIndex);
+            musicListView.Items.Refresh();
         }
     }
 }
