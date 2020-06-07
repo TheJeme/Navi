@@ -50,7 +50,9 @@ namespace Navi
         {      
             if (isTimerEnabled)
             {
-                audioPositionLabel.Content = $"{mediaPlayer.Position.ToString(@"hh\:mm\:ss")} / {musicList[currentPlayingIndex].Duration}"; 
+                audioPositionLabel.Content = $"{mediaPlayer.Position.ToString(@"hh\:mm\:ss")} / {musicList[currentPlayingIndex].Duration}";
+                audioPositionSlider.Maximum = musicList[currentPlayingIndex].Duration.TotalSeconds;
+                audioPositionSlider.Value = mediaPlayer.Position.TotalSeconds;
 
                 if (mediaPlayer.Position >= musicList[currentPlayingIndex].Duration)
                 {
@@ -114,18 +116,30 @@ namespace Navi
 
         private void SkipForward()
         {
+            if (currentPlayingIndex == musicList.Count - 1) return;
+
             currentPlayingIndex++;
             var mediaFile = new Uri(Environment.CurrentDirectory + $"/library/{libraryListView.SelectedValue.ToString()}/{musicList[currentPlayingIndex].Title}");
             mediaPlayer.Open(mediaFile);
-            mediaPlayer.Play();
+            if (isPlayingAudio)
+            {
+                mediaPlayer.Play();
+            }
+            currentPlayingLabel.Content = musicList[currentPlayingIndex].Title;
         }
 
         private void SkipBackward()
         {
+            if (currentPlayingIndex == 0) return;
+
             currentPlayingIndex--;
             var mediaFile = new Uri(Environment.CurrentDirectory + $"/library/{libraryListView.SelectedValue.ToString()}/{musicList[currentPlayingIndex].Title}");
             mediaPlayer.Open(mediaFile);
-            mediaPlayer.Play();
+            if (isPlayingAudio)
+            {
+                mediaPlayer.Play();
+            }
+            currentPlayingLabel.Content = musicList[currentPlayingIndex].Title;
         }
 
         private void PlayMedia()
@@ -341,6 +355,11 @@ namespace Navi
         private void SkipBackward_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             SkipBackward();
+        }
+
+        private void AudioPositionSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+
         }
     }
 }
