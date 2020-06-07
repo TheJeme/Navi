@@ -10,9 +10,13 @@ namespace Navi
     /// </summary>
     public partial class NewLibrary_Window : Window
     {
-        public NewLibrary_Window()
+        string oldDir;
+
+        public NewLibrary_Window(string oldDir)
         {
             InitializeComponent();
+
+            this.oldDir = oldDir;
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
@@ -22,10 +26,12 @@ namespace Navi
 
         private void OkButton_Click(object sender, RoutedEventArgs e)
         {
+            if (LibNameLabel.Text.Length == 0) return;
+
             var libraryName = LibNameLabel.Text;
+
             if (window.Title == "Create new Library")
             {
-                if (libraryName.Length == 0) return;
 
                 if (!Directory.Exists("./library/" + libraryName))
                 {
@@ -40,11 +46,10 @@ namespace Navi
                     MessageBox.Show("Library already exists with that name.", "Error");
                 }
             }
-            else
+            else // Rename directory
             {
-                if (libraryName.Length == 0) return;
 
-                //TODO
+                Directory.Move("./library/" + oldDir, "./library/" + libraryName); // Renames the directory.
 
                 MainWindow.libraryList[(this.Owner as MainWindow).libraryListView.SelectedIndex] = libraryName;
                 (this.Owner as MainWindow).libraryListView.Items.Refresh();

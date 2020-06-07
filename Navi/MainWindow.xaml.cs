@@ -57,10 +57,10 @@ namespace Navi
                 if (mediaPlayer.Position >= musicList[currentPlayingIndex].Duration)
                 {
                     mediaPlayer.Pause();
+                    audioPositionSlider.Value = 0;
 
                     if (isLooping)
                     {
-                        mediaPlayer.Position = TimeSpan.Zero;
                         mediaPlayer.Play();
                     }
                     else
@@ -218,7 +218,7 @@ namespace Navi
 
         private void NewLibraryButton_Click(object sender, RoutedEventArgs e)
         {
-            var newLibWin = new NewLibrary_Window();
+            var newLibWin = new NewLibrary_Window(libraryListView.SelectedValue.ToString());
             newLibWin.Owner = this;
             newLibWin.Show();
         }
@@ -264,7 +264,7 @@ namespace Navi
 
         private void RenameLibrary_Click(object sender, RoutedEventArgs e)
         {
-            var newLibWin = new NewLibrary_Window();
+            var newLibWin = new NewLibrary_Window(libraryListView.SelectedValue.ToString());
             newLibWin.Owner = this;
             newLibWin.Title = "Edit Library name";
             newLibWin.Show();
