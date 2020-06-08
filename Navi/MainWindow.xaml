@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:Navi"
         mc:Ignorable="d"
         Title="Navi"
+        Icon="Resources/navi.ico"
         Background="#162029"
         Height="450" Width="800"
         MinHeight="285" MinWidth="400">

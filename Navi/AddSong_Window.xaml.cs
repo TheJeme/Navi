@@ -46,7 +46,7 @@ namespace Navi
                 MainWindow.currentlyViewingMusicList.Add(new MusicList { Title = video.Title, Duration = video.Duration});
                 (this.Owner as MainWindow).musicListView.Items.Refresh();
                 var destinationPath = Path.Combine($"./library/{(this.Owner as MainWindow).libraryListView.SelectedValue.ToString()}/", $"{title}.mp3");
-                DownloadAudio(youtubeID, destinationPath, video);
+                await DownloadAudio(youtubeID, destinationPath, video);
 
                 (this.Owner as MainWindow).libraryListView.Items.Refresh();
             }

@@ -171,5 +171,11 @@
     <Resource Include="Resources\volume-low.png" />
     <Resource Include="Resources\volume-mute.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\navi.ico" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
