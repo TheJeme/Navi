@@ -1,4 +1,4 @@
-﻿<Window x:Class="Navi.NewLibrary_Window"
+﻿<Window x:Class="Navi.NewName_Window"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -16,7 +16,7 @@
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,10">
                 <Label Content="Enter a name:" Foreground="White" FontSize="28" Margin="3,0"/>
                 <Border Background="White" CornerRadius="10" Height="35">
-                    <TextBox x:Name="LibNameLabel" Width="140" Height="20" Margin="2" BorderThickness="0" VerticalContentAlignment="Center" FontSize="14" MaxLength="30"/>
+                    <TextBox x:Name="nameLabel" Width="140" Height="20" Margin="2" BorderThickness="0" VerticalContentAlignment="Center" FontSize="14" MaxLength="30"/>
                 </Border>
             </StackPanel>
 

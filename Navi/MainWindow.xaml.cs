@@ -95,7 +95,9 @@ namespace Navi
 
                 Mp3FileReader reader = new Mp3FileReader($"{directoryPath}");
                 string duration = reader.TotalTime.ToString(@"hh\:mm\:ss");
-                currentlyViewingMusicList.Add(new MusicList { Title = new DirectoryInfo(directoryPath).Name.ToString(), Duration = TimeSpan.Parse(duration) });
+                string title = new DirectoryInfo(directoryPath).Name.ToString().Remove(new DirectoryInfo(directoryPath).Name.ToString().Length - 4);
+
+                currentlyViewingMusicList.Add(new MusicList { Title = title, Duration = TimeSpan.Parse(duration) });
             }
             musicListView.Items.Refresh();
         }
@@ -144,43 +146,53 @@ namespace Navi
             currentPlayingLabel.Content = currentlyPlayingMusicList[currentPlayingIndex].Title;
         }
 
+        private void PlayAudio()
+        {
+            if (musicListView.Items.Count != 0 && musicListView.SelectedItem != null)
+            {
+                if (currentPlayingLabel.Content.ToString() != currentlyViewingMusicList[musicListView.SelectedIndex].Title)
+                {
+
+                    currentlyPlayingMusicList.Clear();
+                    currentlyPlayingMusicList = new List<MusicList>(currentlyViewingMusicList);
+                    currentPlayingIndex = musicListView.SelectedIndex;
+                    currentPlayingLabel.Content = currentlyPlayingMusicList[currentPlayingIndex].Title;
+
+                    var mediaFile = new Uri(Environment.CurrentDirectory + $"/library/{libraryListView.SelectedValue.ToString()}/{currentlyPlayingMusicList[currentPlayingIndex].Title}");
+                    mediaPlayer.Open(mediaFile);
+                }
+            }
+            if (currentlyPlayingMusicList.Count == 0) return;
+
+            mediaPlayer.Play();
+
+            playMenuItem.IsEnabled = false;
+            pauseMenuItem.IsEnabled = true;
+            isTimerEnabled = true;
+            isPlayingAudio = true;
+            playIcon.Source = new BitmapImage(new Uri("./Resources/pause.png", UriKind.Relative));
+        }
+
+        private void PauseAudio()
+        {
+            mediaPlayer.Pause();
+
+            playMenuItem.IsEnabled = true;
+            pauseMenuItem.IsEnabled = false;
+            isTimerEnabled = false;
+            isPlayingAudio = false;
+            playIcon.Source = new BitmapImage(new Uri("./Resources/play.png", UriKind.Relative));
+        }
+
         private void PlayMedia()
         {
             if (!isPlayingAudio)
             {
-                if (musicListView.Items.Count != 0 && musicListView.SelectedItem != null)
-                {
-                    if (currentPlayingLabel.Content.ToString() != currentlyViewingMusicList[musicListView.SelectedIndex].Title)
-                    {
-
-                        currentlyPlayingMusicList.Clear();
-                        currentlyPlayingMusicList = new List<MusicList>(currentlyViewingMusicList);
-                        currentPlayingIndex = musicListView.SelectedIndex;
-                        currentPlayingLabel.Content = currentlyPlayingMusicList[currentPlayingIndex].Title;
-
-                        var mediaFile = new Uri(Environment.CurrentDirectory + $"/library/{libraryListView.SelectedValue.ToString()}/{currentlyPlayingMusicList[currentPlayingIndex].Title}");
-                        mediaPlayer.Open(mediaFile);
-                    }
-                }
-                if (currentlyPlayingMusicList.Count == 0) return;
-
-                mediaPlayer.Play();
-
-                playMenuItem.IsEnabled = false;
-                pauseMenuItem.IsEnabled = true;
-                isTimerEnabled = true;
-                isPlayingAudio = true;
-                playIcon.Source = new BitmapImage(new Uri("./Resources/pause.png", UriKind.Relative));
+                PlayAudio();
             }
             else
             {
-                mediaPlayer.Pause();
-
-                playMenuItem.IsEnabled = true;
-                pauseMenuItem.IsEnabled = false;
-                isTimerEnabled = false;
-                isPlayingAudio = false;
-                playIcon.Source = new BitmapImage(new Uri("./Resources/play.png", UriKind.Relative));
+                PauseAudio();
             }
         }
 
@@ -228,9 +240,9 @@ namespace Navi
 
         private void NewLibraryButton_Click(object sender, RoutedEventArgs e)
         {
-            var newLibWin = new NewLibrary_Window(libraryListView.SelectedValue.ToString());
-            newLibWin.Owner = this;
-            newLibWin.Show();
+            var newNameWin = new NewName_Window("Create new Library");
+            newNameWin.Owner = this;
+            newNameWin.Show();
         }
 
         private void AddSongButton_Click(object sender, RoutedEventArgs e)
@@ -274,10 +286,9 @@ namespace Navi
 
         private void RenameLibrary_Click(object sender, RoutedEventArgs e)
         {
-            var newLibWin = new NewLibrary_Window(libraryListView.SelectedValue.ToString());
-            newLibWin.Owner = this;
-            newLibWin.Title = "Edit Library name";
-            newLibWin.Show();
+            var newNameWin = new NewName_Window("Rename Library", libraryListView.SelectedValue.ToString());
+            newNameWin.Owner = this;
+            newNameWin.Show();
         }
 
         private void DeleteLibrary_Click(object sender, RoutedEventArgs e)
@@ -372,6 +383,11 @@ namespace Navi
             mediaPlayer.Position = TimeSpan.FromSeconds(audioPositionSlider.Value);
         }
 
+        private void PlaySongMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            PlayAudio();
+        }
+
         private void RandomizeSongMenuItem_Click(object sender, RoutedEventArgs e)
         {
 
@@ -379,7 +395,9 @@ namespace Navi
 
         private void RenameSongMenuItem_Click(object sender, RoutedEventArgs e)
         {
-
+            var newLibWin = new NewName_Window("Rename Song", libraryListView.SelectedValue.ToString(), currentlyViewingMusicList[musicListView.SelectedIndex].Title);
+            newLibWin.Owner = this;
+            newLibWin.Show();
         }
 
         private void DeleteSongMenuItem_Click(object sender, RoutedEventArgs e)

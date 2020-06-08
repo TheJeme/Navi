@@ -158,6 +158,7 @@
 
             <ListView.ContextMenu>
                 <ContextMenu>
+                    <MenuItem Header="Play" Click="PlaySongMenuItem_Click"/>
                     <MenuItem Header="Randomize" Click="RandomizeSongMenuItem_Click"/>
                     <Separator />
                     <MenuItem Header="Rename" Click="RenameSongMenuItem_Click"/>
