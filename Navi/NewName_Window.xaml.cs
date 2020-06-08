@@ -74,16 +74,6 @@ namespace Navi
             }
         }
 
-        private void RenameSong()
-        {
-            var songName = nameLabel.Text;
-
-            File.Move($"./library/{selectedLibrary}/{selectedSong}", $"./library/{selectedLibrary}/{songName}.mp3"); // Renames the file.
-
-            MainWindow.currentlyViewingMusicList[(this.Owner as MainWindow).musicListView.SelectedIndex].Title = songName;
-            (this.Owner as MainWindow).musicListView.Items.Refresh();
-            this.Close();
-        }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
@@ -102,10 +92,6 @@ namespace Navi
 
                 case ("Rename Library"):
                     RenameLibrary();
-                    break;
-
-                case ("Rename Song"):
-                    RenameSong();
                     break;
             }
         }

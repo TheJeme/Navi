@@ -94,10 +94,10 @@ namespace Navi
                 if (!directoryPath.EndsWith(".mp3")) continue; // Does not include anyother type files than mp3.
 
                 Mp3FileReader reader = new Mp3FileReader($"{directoryPath}");
-                string duration = reader.TotalTime.ToString(@"hh\:mm\:ss");
+                TimeSpan duration = TimeSpan.Parse(reader.TotalTime.ToString(@"hh\:mm\:ss"));
                 string title = new DirectoryInfo(directoryPath).Name.ToString().Remove(new DirectoryInfo(directoryPath).Name.ToString().Length - 4);
 
-                currentlyViewingMusicList.Add(new MusicList { Title = title, Duration = TimeSpan.Parse(duration) });
+                currentlyViewingMusicList.Add(new MusicList { Title = title, Duration = duration });
             }
             musicListView.Items.Refresh();
         }
@@ -123,7 +123,7 @@ namespace Navi
             if (currentPlayingIndex == currentlyPlayingMusicList.Count - 1) return;
 
             currentPlayingIndex++;
-            var mediaFile = new Uri(Environment.CurrentDirectory + $"/library/{libraryListView.SelectedValue.ToString()}/{currentlyPlayingMusicList[currentPlayingIndex].Title}");
+            var mediaFile = new Uri(Environment.CurrentDirectory + $"/library/{libraryListView.SelectedValue.ToString()}/{currentlyPlayingMusicList[currentPlayingIndex].Title}.mp3");
             mediaPlayer.Open(mediaFile);
             if (isPlayingAudio)
             {
@@ -137,7 +137,7 @@ namespace Navi
             if (currentPlayingIndex == 0) return;
 
             currentPlayingIndex--;
-            var mediaFile = new Uri(Environment.CurrentDirectory + $"/library/{libraryListView.SelectedValue.ToString()}/{currentlyPlayingMusicList[currentPlayingIndex].Title}");
+            var mediaFile = new Uri(Environment.CurrentDirectory + $"/library/{libraryListView.SelectedValue.ToString()}/{currentlyPlayingMusicList[currentPlayingIndex].Title}.mp3");
             mediaPlayer.Open(mediaFile);
             if (isPlayingAudio)
             {
@@ -158,7 +158,7 @@ namespace Navi
                     currentPlayingIndex = musicListView.SelectedIndex;
                     currentPlayingLabel.Content = currentlyPlayingMusicList[currentPlayingIndex].Title;
 
-                    var mediaFile = new Uri(Environment.CurrentDirectory + $"/library/{libraryListView.SelectedValue.ToString()}/{currentlyPlayingMusicList[currentPlayingIndex].Title}");
+                    var mediaFile = new Uri(Environment.CurrentDirectory + $"/library/{libraryListView.SelectedValue.ToString()}/{currentlyPlayingMusicList[currentPlayingIndex].Title}.mp3");
                     mediaPlayer.Open(mediaFile);
                 }
             }
@@ -393,16 +393,9 @@ namespace Navi
 
         }
 
-        private void RenameSongMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            var newLibWin = new NewName_Window("Rename Song", libraryListView.SelectedValue.ToString(), currentlyViewingMusicList[musicListView.SelectedIndex].Title);
-            newLibWin.Owner = this;
-            newLibWin.Show();
-        }
-
         private void DeleteSongMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            File.Delete($"./library/{libraryListView.SelectedValue.ToString()}/{currentlyViewingMusicList[musicListView.SelectedIndex].Title}");
+            File.Delete($"./library/{libraryListView.SelectedValue.ToString()}/{currentlyViewingMusicList[musicListView.SelectedIndex].Title}.mp3");
             currentlyViewingMusicList.RemoveAt(musicListView.SelectedIndex);
             musicListView.Items.Refresh();
         }
