@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Threading;
 using System.Windows.Media;
@@ -242,14 +243,14 @@ namespace Navi
         {
             var newNameWin = new NewName_Window("Create new Library");
             newNameWin.Owner = this;
-            newNameWin.Show();
+            newNameWin.ShowDialog();
         }
 
         private void AddSongButton_Click(object sender, RoutedEventArgs e)
         {
             var addSongWin = new AddSong_Window();
             addSongWin.Owner = this;
-            addSongWin.Show();
+            addSongWin.ShowDialog();
         }
 
         private void LibraryListView_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
@@ -286,9 +287,16 @@ namespace Navi
 
         private void RenameLibrary_Click(object sender, RoutedEventArgs e)
         {
-            var newNameWin = new NewName_Window("Rename Library", libraryListView.SelectedValue.ToString());
-            newNameWin.Owner = this;
-            newNameWin.Show();
+            if (currentlyPlayingMusicList.SequenceEqual(currentlyViewingMusicList)) // Can't rename playinglist
+            {
+                MessageBox.Show("Can't rename library that is playing.", "Erorr");
+            }
+            else
+            {
+                var newNameWin = new NewName_Window("Rename Library", libraryListView.SelectedValue.ToString());
+                newNameWin.Owner = this;
+                newNameWin.ShowDialog();
+            }
         }
 
         private void DeleteLibrary_Click(object sender, RoutedEventArgs e)

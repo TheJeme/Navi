@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
 
@@ -79,12 +80,8 @@ namespace Navi
             return string.Join("_", title.Split(Path.GetInvalidFileNameChars()));
         }
 
-        private async void DownloadAudio(string youtubeID, string destinationPath, YoutubeExplode.Videos.Video video)
+        private async Task DownloadAudio(string youtubeID, string destinationPath, YoutubeExplode.Videos.Video video)
         {
-            //using (WebClient webClient = new WebClient())
-            //{
-            //    webClient.DownloadFileAsync(new Uri(video.Thumbnails.StandardResUrl), $"./library/{}/{video.Title}.png");
-            //}
             await youtubeConverter.DownloadVideoAsync(youtubeID, destinationPath);
         }
     }

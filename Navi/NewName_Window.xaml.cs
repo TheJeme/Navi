@@ -10,7 +10,6 @@ namespace Navi
     public partial class NewName_Window : Window
     {
         string selectedLibrary;
-        string selectedSong;
 
         public NewName_Window(string winTitle)
         {
@@ -27,15 +26,6 @@ namespace Navi
             this.selectedLibrary = selectedLibrary;
         }
 
-        public NewName_Window(string winTitle, string selectedLibrary, string selectedSong)
-        {
-            InitializeComponent();
-
-            window.Title = winTitle;
-            this.selectedLibrary = selectedLibrary;
-            this.selectedSong = selectedSong;
-        }
-
         private void CreateNewLibrary()
         {
             var libraryName = nameLabel.Text;
@@ -46,7 +36,16 @@ namespace Navi
 
                 Directory.CreateDirectory("./library/" + libraryName);
                 (this.Owner as MainWindow).libraryListView.Items.Refresh();
-                this.Close();
+                Application.Current.MainWindow.Focus();
+
+
+                if ((this.Owner as MainWindow).libraryListView.SelectedValue == null) return;
+
+                if (libraryName == (this.Owner as MainWindow).libraryListView.SelectedValue.ToString())
+                {
+                    (this.Owner as MainWindow).musicListView.Items.Clear();
+                    (this.Owner as MainWindow).musicListView.Items.Refresh();
+                }
             }
             else
             {
@@ -62,11 +61,21 @@ namespace Navi
 
             if (!Directory.Exists("./library/" + libraryName))
             {
-                Directory.Move("./library/" + selectedLibrary, "./library/" + libraryName); // Renames the directory.
+                try
+                {
+                    Directory.Move("./library/" + selectedLibrary, "./library/" + libraryName); // Renames the directory.
 
-                MainWindow.libraryList[(this.Owner as MainWindow).libraryListView.SelectedIndex] = libraryName;
-                (this.Owner as MainWindow).libraryListView.Items.Refresh();
-                this.Close();
+                    MainWindow.libraryList[(this.Owner as MainWindow).libraryListView.SelectedIndex] = libraryName;
+                    (this.Owner as MainWindow).libraryListView.Items.Refresh();
+                    Application.Current.MainWindow.Focus();
+
+                    MainWindow.currentlyViewingMusicList.Clear();
+                    (this.Owner as MainWindow).musicListView.Items.Refresh();
+                }
+                catch
+                {
+                    MessageBox.Show("Error with renaming the library, try again.", "Error");
+                }
             }
             else
             {
@@ -94,6 +103,7 @@ namespace Navi
                     RenameLibrary();
                     break;
             }
+            this.Close(); // Closes the window
         }
     }
 }
