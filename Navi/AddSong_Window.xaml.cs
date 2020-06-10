@@ -58,10 +58,10 @@ namespace Navi
             {
                 MessageBox.Show("SOMETHING HAPPANED", "Error"); //TODO: FIX ERRORGHANDLING
             }
-            //catch (Exception er)
-            //{
-            //    MessageBox.Show("Invalid Youtube video id or url.", er.ToString());
-            //}
+            catch (Exception er)
+            {
+                MessageBox.Show("Invalid Youtube video id or url.", er.ToString());
+            }
 
             this.Close();
         }

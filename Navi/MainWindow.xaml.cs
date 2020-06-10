@@ -52,7 +52,6 @@ namespace Navi
             if (isTimerEnabled)
             {
                 audioPositionLabel.Content = $"{mediaPlayer.Position.ToString(@"hh\:mm\:ss")} / {currentlyPlayingMusicList[currentPlayingIndex].Duration}";
-                audioPositionSlider.Maximum = currentlyPlayingMusicList[currentPlayingIndex].Duration.TotalSeconds;
                 audioPositionSlider.Value = mediaPlayer.Position.TotalSeconds;
 
                 if (mediaPlayer.Position >= currentlyPlayingMusicList[currentPlayingIndex].Duration)
@@ -121,7 +120,7 @@ namespace Navi
 
         private void SkipForward()
         {
-            if (currentPlayingIndex == currentlyPlayingMusicList.Count - 1) return;
+            if (currentPlayingIndex == currentlyPlayingMusicList.Count - 1) PauseAudio();
 
             currentPlayingIndex++;
             var mediaFile = new Uri(Environment.CurrentDirectory + $"/library/{libraryListView.SelectedValue.ToString()}/{currentlyPlayingMusicList[currentPlayingIndex].Title}.mp3");
@@ -161,6 +160,7 @@ namespace Navi
 
                     var mediaFile = new Uri(Environment.CurrentDirectory + $"/library/{libraryListView.SelectedValue.ToString()}/{currentlyPlayingMusicList[currentPlayingIndex].Title}.mp3");
                     mediaPlayer.Open(mediaFile);
+                    audioPositionSlider.Maximum = currentlyPlayingMusicList[currentPlayingIndex].Duration.TotalSeconds;
                 }
             }
             if (currentlyPlayingMusicList.Count == 0) return;
@@ -388,7 +388,10 @@ namespace Navi
 
         private void AudioPositionSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            mediaPlayer.Position = TimeSpan.FromSeconds(audioPositionSlider.Value);
+            if (audioPositionSlider.IsFocused)
+            {
+                mediaPlayer.Position = TimeSpan.FromSeconds(audioPositionSlider.Value);
+            }
         }
 
         private void PlaySongMenuItem_Click(object sender, RoutedEventArgs e)
@@ -396,14 +399,15 @@ namespace Navi
             PlayAudio();
         }
 
-        private void RandomizeSongMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private void DeleteSongMenuItem_Click(object sender, RoutedEventArgs e)
         {
             File.Delete($"./library/{libraryListView.SelectedValue.ToString()}/{currentlyViewingMusicList[musicListView.SelectedIndex].Title}.mp3");
+
+            if (currentlyPlayingMusicList.SequenceEqual(currentlyViewingMusicList)) // Can't rename playinglist
+            {
+                currentlyPlayingMusicList.RemoveAt(musicListView.SelectedIndex);
+            }
+
             currentlyViewingMusicList.RemoveAt(musicListView.SelectedIndex);
             musicListView.Items.Refresh();
         }
