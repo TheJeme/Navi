@@ -11,14 +11,14 @@ namespace Navi
     {
         string selectedLibrary;
 
-        public NewName_Window(string winTitle)
+        public NewName_Window(string winTitle) // Used for creating libraries
         {
             InitializeComponent();
 
             window.Title = winTitle;
         }
 
-        public NewName_Window(string winTitle, string selectedLibrary)
+        public NewName_Window(string winTitle, string selectedLibrary) // Used for renaming libraries
         {
             InitializeComponent();
 
@@ -30,7 +30,7 @@ namespace Navi
         {
             var libraryName = nameLabel.Text;
 
-            if (!Directory.Exists("./library/" + libraryName))
+            if (!Directory.Exists("./library/" + libraryName)) // Checks if library already exists with that name
             {
                 MainWindow.libraryList.Add(libraryName);
 
@@ -59,7 +59,7 @@ namespace Navi
 
             var libraryName = nameLabel.Text;
 
-            if (!Directory.Exists("./library/" + libraryName))
+            if (!Directory.Exists("./library/" + libraryName)) // Checks if library already exists with that name
             {
                 try
                 {
@@ -69,7 +69,7 @@ namespace Navi
                     (this.Owner as MainWindow).libraryListView.Items.Refresh();
                     Application.Current.MainWindow.Focus();
 
-                    MainWindow.currentlyViewingMusicList.Clear();
+                    MainWindow.currentlyViewingMusicList.Clear(); // Clears currently viewing list to ensure that errors get eliminated.
                     (this.Owner as MainWindow).musicListView.Items.Refresh();
                 }
                 catch
@@ -91,7 +91,7 @@ namespace Navi
 
         private void OkButton_Click(object sender, RoutedEventArgs e)
         {
-            if (nameLabel.Text.Length == 0) return;
+            if (nameLabel.Text.Length == 0) return; // Don't accept blank value.
 
             switch (window.Title)
             {

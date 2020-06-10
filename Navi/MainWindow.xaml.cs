@@ -25,7 +25,6 @@ namespace Navi
 
         private bool isPlayingAudio;
         private bool isLooping;
-        private bool isTimerEnabled;
 
         private int currentPlayingIndex;
 
@@ -47,9 +46,12 @@ namespace Navi
             musicListView.ItemsSource = currentlyViewingMusicList;
         }
 
-        private void dtTicker(object sender, EventArgs e) // Updates Audioposition every second.
+
+        // Updates AudiopositionLabel and AudiopositionSlider every second.
+        // If song is completed then loops or skips forward.
+        private void dtTicker(object sender, EventArgs e) 
         {      
-            if (isTimerEnabled)
+            if (isPlayingAudio)
             {
                 audioPositionLabel.Content = $"{mediaPlayer.Position.ToString(@"hh\:mm\:ss")} / {currentlyPlayingMusicList[currentPlayingIndex].Duration}";
                 audioPositionSlider.Value = mediaPlayer.Position.TotalSeconds;
@@ -71,9 +73,11 @@ namespace Navi
             }
         }
 
-        private void CheckLibraryStatus()
+
+        // Check for music libraries in root library directory.
+        private void CheckLibraryStatus() 
         {
-            if (!Directory.Exists("./library"))
+            if (!Directory.Exists("./library")) // Creates a root directory for all music libraries.
             {
                 Directory.CreateDirectory("./library");
             }
@@ -84,14 +88,14 @@ namespace Navi
             }
         }
 
+        // Check all songs in selected library.
         private void CheckSongStatus()
         {
             currentlyViewingMusicList.Clear();
 
             foreach (var directoryPath in Directory.GetFiles($"./library/{libraryListView.SelectedValue.ToString()}/"))
             {
-                Console.WriteLine(directoryPath);
-                if (!directoryPath.EndsWith(".mp3")) continue; // Does not include anyother type files than mp3.
+                if (!directoryPath.EndsWith(".mp3")) continue; // Does not include any other type files than mp3.
 
                 Mp3FileReader reader = new Mp3FileReader($"{directoryPath}");
                 TimeSpan duration = TimeSpan.Parse(reader.TotalTime.ToString(@"hh\:mm\:ss"));
@@ -102,15 +106,16 @@ namespace Navi
             musicListView.Items.Refresh();
         }
 
+        //Loops the song
         private void Loop()
         {
-            if (isLooping)
+            if (isLooping) // Enables looping
             {
                 loopButton.Background = Brushes.Gray;
                 loopMenuItem.IsChecked = false;
                 isLooping = false;
             }
-            else
+            else // Disables looping
             {
                 loopButton.Background = Brushes.AliceBlue;
                 loopMenuItem.IsChecked = true;
@@ -120,7 +125,11 @@ namespace Navi
 
         private void SkipForward()
         {
-            if (currentPlayingIndex == currentlyPlayingMusicList.Count - 1) PauseAudio();
+            if (currentPlayingIndex == currentlyPlayingMusicList.Count - 1) // If last song in list, then pause.
+            {
+                PauseAudio();
+                return;
+            }
 
             currentPlayingIndex++;
             var mediaFile = new Uri(Environment.CurrentDirectory + $"/library/{libraryListView.SelectedValue.ToString()}/{currentlyPlayingMusicList[currentPlayingIndex].Title}.mp3");
@@ -134,7 +143,7 @@ namespace Navi
 
         private void SkipBackward()
         {
-            if (currentPlayingIndex == 0) return;
+            if (currentPlayingIndex == 0) return; // If the first item, then doesn't accept to go negative.
 
             currentPlayingIndex--;
             var mediaFile = new Uri(Environment.CurrentDirectory + $"/library/{libraryListView.SelectedValue.ToString()}/{currentlyPlayingMusicList[currentPlayingIndex].Title}.mp3");
@@ -169,7 +178,6 @@ namespace Navi
 
             playMenuItem.IsEnabled = false;
             pauseMenuItem.IsEnabled = true;
-            isTimerEnabled = true;
             isPlayingAudio = true;
             playIcon.Source = new BitmapImage(new Uri("./Resources/pause.png", UriKind.Relative));
         }
@@ -180,7 +188,6 @@ namespace Navi
 
             playMenuItem.IsEnabled = true;
             pauseMenuItem.IsEnabled = false;
-            isTimerEnabled = false;
             isPlayingAudio = false;
             playIcon.Source = new BitmapImage(new Uri("./Resources/play.png", UriKind.Relative));
         }
@@ -239,6 +246,7 @@ namespace Navi
             }
         }
 
+        // For creating a music library
         private void NewLibraryButton_Click(object sender, RoutedEventArgs e)
         {
             var newNameWin = new NewName_Window("Create new Library");
@@ -246,6 +254,7 @@ namespace Navi
             newNameWin.ShowDialog();
         }
 
+        // For renaming a music library
         private void AddSongButton_Click(object sender, RoutedEventArgs e)
         {
             var addSongWin = new AddSong_Window();
@@ -253,41 +262,45 @@ namespace Navi
             addSongWin.ShowDialog();
         }
 
+        // Checks songs in new selected library and updates them into currently viewing list.
         private void LibraryListView_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            addSongButton.IsEnabled = true;
+            addSongButton.IsEnabled = true; // So you can't add songs into null library, because nothing is selected.
 
-            if (libraryListView.SelectedItem != null) CheckSongStatus();
+            if (libraryListView.SelectedItem != null) // LibraryListView selected item can become unselected so just to be safe.
+                CheckSongStatus();
         }
 
         private void MusicListView_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            Console.WriteLine("MusicListView_SelectionChanged");
+            Console.WriteLine("MusicListView_SelectionChanged"); // Used only for debuggin purposes
         }
 
+        // Changes the library order by one to up.
         private void MoveUpLibrary_Click(object sender, RoutedEventArgs e)
         {
-            if (libraryListView.SelectedIndex == 0) return;
+            if (libraryListView.SelectedIndex == 0) return; // if nothing is selected then return
 
             var item = libraryList[libraryListView.SelectedIndex];
             libraryList.RemoveAt(libraryListView.SelectedIndex);
             libraryList.Insert(libraryListView.SelectedIndex - 1, item);
-            libraryListView.Items.Refresh();
+            libraryListView.Items.Refresh(); // Refresh the list to update the UI
         }
 
+        // Changes the library order by one to down.
         private void MoveDownLibrary_Click(object sender, RoutedEventArgs e)
         {
-            if (libraryListView.SelectedIndex == libraryList.Count - 1) return;
+            if (libraryListView.SelectedIndex == libraryList.Count - 1) return; // if nothing is selected then return
 
             var item = libraryList[libraryListView.SelectedIndex];
             libraryList.RemoveAt(libraryListView.SelectedIndex);
             libraryList.Insert(libraryListView.SelectedIndex + 1, item);
-            libraryListView.Items.Refresh();
+            libraryListView.Items.Refresh(); // Refresh the list to update the UI
         }
 
         private void RenameLibrary_Click(object sender, RoutedEventArgs e)
         {
-            if (currentlyPlayingMusicList.SequenceEqual(currentlyViewingMusicList)) // Can't rename playinglist
+            if (currentlyPlayingMusicList.SequenceEqual(currentlyViewingMusicList)) // Can't rename currently playing list
             {
                 MessageBox.Show("Can't rename library that is playing.", "Erorr");
             }
@@ -301,9 +314,9 @@ namespace Navi
 
         private void DeleteLibrary_Click(object sender, RoutedEventArgs e)
         {
-            if (!Directory.Exists("./library/" + libraryListView.SelectedValue.ToString())) return;
+            if (!Directory.Exists("./library/" + libraryListView.SelectedValue.ToString())) return; // Can't delete library that doesn't exist.
 
-            if (Directory.GetFileSystemEntries("./library/" + libraryListView.SelectedValue.ToString()).Length == 0)
+            if (Directory.GetFileSystemEntries("./library/" + libraryListView.SelectedValue.ToString()).Length == 0) // If no songs in the list else warning
             {
                 Directory.Delete("./library/" + libraryListView.SelectedValue.ToString(), true);
                 libraryList.RemoveAt(libraryListView.SelectedIndex);
@@ -348,7 +361,7 @@ namespace Navi
 
         private void LoopMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            Loop();
+            Loop(); // Enables Looping
         }
 
         private void Volume100MenuItem_Click(object sender, RoutedEventArgs e)

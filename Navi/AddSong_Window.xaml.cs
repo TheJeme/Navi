@@ -41,14 +41,14 @@ namespace Navi
             try
             {
                 var video = await youtube.Videos.GetAsync(youtubeID);
-                var title = CleanTitle(video.Title);
-                CheckLibraryStatus();
+                var title = CleanTitle(video.Title); // Cleans illegal characters to bypass errors
+                CheckLibraryStatus(); // Check that root directory exists
                 MainWindow.currentlyViewingMusicList.Add(new MusicList { Title = video.Title, Duration = video.Duration});
                 (this.Owner as MainWindow).musicListView.Items.Refresh();
                 var destinationPath = Path.Combine($"./library/{(this.Owner as MainWindow).libraryListView.SelectedValue.ToString()}/", $"{title}.mp3");
                 await DownloadAudio(youtubeID, destinationPath, video);
 
-                (this.Owner as MainWindow).libraryListView.Items.Refresh();
+                (this.Owner as MainWindow).libraryListView.Items.Refresh(); // Refresh libraryListView to make sure song is added to list and is visible.
             }
             catch (IOException)
             {
