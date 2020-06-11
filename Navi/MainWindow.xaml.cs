@@ -59,7 +59,8 @@ namespace Navi
                 if (mediaPlayer.Position >= currentlyPlayingMusicList[currentPlayingIndex].Duration)
                 {
                     mediaPlayer.Pause();
-                    audioPositionSlider.Value = 0;
+                    audioPositionSlider.Value = 0; // Reset slider and label values back to zero.
+                    audioPositionLabel.Content = $"{mediaPlayer.Position.ToString(@"hh\:mm\:ss")} / {currentlyPlayingMusicList[currentPlayingIndex].Duration}";
 
                     if (isLooping)
                     {
@@ -300,7 +301,7 @@ namespace Navi
 
         private void RenameLibrary_Click(object sender, RoutedEventArgs e)
         {
-            if (currentlyPlayingMusicList.SequenceEqual(currentlyViewingMusicList)) // Can't rename currently playing list
+            if (currentlyPlayingMusicList.SequenceEqual(currentlyViewingMusicList) && currentPlayingLabel.Content.ToString().Length != 0) // Can't rename currently playing list
             {
                 MessageBox.Show("Can't rename library that is playing.", "Erorr");
             }
@@ -312,16 +313,31 @@ namespace Navi
             }
         }
 
+        private void DeleteLibraryItem()
+        {
+            Directory.Delete("./library/" + libraryListView.SelectedValue.ToString(), true); // Deletes the directory and all the files inside it.
+        
+            libraryList.RemoveAt(libraryListView.SelectedIndex);
+            currentlyViewingMusicList.Clear(); // Clears currently viewing list to ensure that errors get eliminated.
+            musicListView.Items.Refresh();
+            libraryListView.Items.Refresh();
+            addSongButton.IsEnabled = false;
+        }
+
         private void DeleteLibrary_Click(object sender, RoutedEventArgs e)
         {
             if (!Directory.Exists("./library/" + libraryListView.SelectedValue.ToString())) return; // Can't delete library that doesn't exist.
 
+            if (currentlyPlayingMusicList.SequenceEqual(currentlyViewingMusicList) && currentPlayingLabel.Content.ToString().Length != 0) // Can't rename currently playing list
+            {
+                MessageBox.Show("Can't delete library that is playing.", "Erorr");
+                return;
+            }
+
+
             if (Directory.GetFileSystemEntries("./library/" + libraryListView.SelectedValue.ToString()).Length == 0) // If no songs in the list else warning
             {
-                Directory.Delete("./library/" + libraryListView.SelectedValue.ToString(), true);
-                libraryList.RemoveAt(libraryListView.SelectedIndex);
-                libraryListView.Items.Refresh();
-                addSongButton.IsEnabled = false;
+                DeleteLibraryItem();
             }
             else
             {
@@ -333,12 +349,9 @@ namespace Navi
                 {
                     try
                     {
-                        Directory.Delete("./library/" + libraryListView.SelectedValue.ToString(), true);
-                        libraryList.RemoveAt(libraryListView.SelectedIndex);
-                        libraryListView.Items.Refresh();
-                        addSongButton.IsEnabled = false;
+                        DeleteLibraryItem();
                     }
-                    catch (Exception)
+                    catch (InvalidOperationException)
                     {
                         MessageBox.Show("Error with deleting the library, try again.", "Error");
                     }
@@ -368,7 +381,7 @@ namespace Navi
 
         private void LoopMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            Loop(); // Enables Looping
+            Loop();
         }
 
         private void Volume100MenuItem_Click(object sender, RoutedEventArgs e)
@@ -420,16 +433,40 @@ namespace Navi
         }
 
         private void DeleteSongMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            File.Delete($"./library/{libraryListView.SelectedValue.ToString()}/{currentlyViewingMusicList[musicListView.SelectedIndex].Title}.mp3");
+        {       
+            if (currentlyPlayingMusicList.Count == 0)
+            {
+                DeleteSongItem();
+            }
+            else
+            {
+                if (currentlyPlayingMusicList[musicListView.SelectedIndex].Equals(currentlyViewingMusicList[musicListView.SelectedIndex])
+                    && currentlyViewingMusicList[musicListView.SelectedIndex].Title == currentPlayingLabel.Content.ToString()) // Can't delete already playing song
+                {
+                    MessageBox.Show("Can't delete song that is playing.", "Erorr");
+                }
+                else
+                {
+                    DeleteSongItem();
+                }
+            }
+        }
 
-            if (currentlyPlayingMusicList.SequenceEqual(currentlyViewingMusicList))
+        private void DeleteSongItem()
+        {
+            if (musicListView.SelectedIndex == -1) return;
+
+            string songPath = $"./library/{libraryListView.SelectedValue.ToString()}/{currentlyViewingMusicList[musicListView.SelectedIndex].Title}.mp3";
+
+            if (currentlyPlayingMusicList.SequenceEqual(currentlyViewingMusicList) && currentPlayingLabel.Content.ToString().Length != 0)
             {
                 currentlyPlayingMusicList.RemoveAt(musicListView.SelectedIndex);
             }
 
             currentlyViewingMusicList.RemoveAt(musicListView.SelectedIndex);
             musicListView.Items.Refresh();
+
+            File.Delete(songPath);
         }
     }
 }
