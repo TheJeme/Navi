@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Windows;
 
 namespace Navi
@@ -86,7 +85,7 @@ namespace Navi
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            this.Close(); // Closes the window
         }
 
         private void OkButton_Click(object sender, RoutedEventArgs e)

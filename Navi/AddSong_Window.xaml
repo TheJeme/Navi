@@ -21,6 +21,7 @@
             </StackPanel>
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="5">
+                <Label x:Name="downloadingLabel" Visibility="Collapsed" Content="DOWNLOADING..." VerticalContentAlignment="Center" Foreground="White" FontSize="28" Width="300"/>
                 <Button x:Name="okButton" Content="Ok" Width="100" Height="40" Margin="15" Click="OkButton_Click"/>
                 <Button x:Name="closeButton" Width="100" Content="Cancel" Height="40" Margin="15" Click="CloseButton_Click"/>
             </StackPanel>

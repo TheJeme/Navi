@@ -331,10 +331,17 @@ namespace Navi
                 }
                 else
                 {
-                    Directory.Delete("./library/" + libraryListView.SelectedValue.ToString(), true);
-                    libraryList.RemoveAt(libraryListView.SelectedIndex);
-                    libraryListView.Items.Refresh();
-                    addSongButton.IsEnabled = false;
+                    try
+                    {
+                        Directory.Delete("./library/" + libraryListView.SelectedValue.ToString(), true);
+                        libraryList.RemoveAt(libraryListView.SelectedIndex);
+                        libraryListView.Items.Refresh();
+                        addSongButton.IsEnabled = false;
+                    }
+                    catch (Exception)
+                    {
+                        MessageBox.Show("Error with deleting the library, try again.", "Error");
+                    }
                 }
             }
         }
@@ -416,7 +423,7 @@ namespace Navi
         {
             File.Delete($"./library/{libraryListView.SelectedValue.ToString()}/{currentlyViewingMusicList[musicListView.SelectedIndex].Title}.mp3");
 
-            if (currentlyPlayingMusicList.SequenceEqual(currentlyViewingMusicList)) // Can't rename playinglist
+            if (currentlyPlayingMusicList.SequenceEqual(currentlyViewingMusicList))
             {
                 currentlyPlayingMusicList.RemoveAt(musicListView.SelectedIndex);
             }
