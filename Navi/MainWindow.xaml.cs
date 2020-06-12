@@ -52,19 +52,6 @@ namespace Navi
         // If song is completed then loops or skips forward.
         private void dtTicker(object sender, EventArgs e) 
         {
-            try
-            {
-
-                File.Open(@"D:\KOODAUS\C#\WPF\Navi\Navi\bin\Debug\library\o – kopio (2)\【MV】 鹿乃 「Stella-rium」 【OFFICIAL】.mp3", FileMode.Open, FileAccess.Read, FileShare.None);
-                Console.WriteLine("not used");
-            }
-
-            catch (Exception)
-            {
-
-                Console.WriteLine("used");
-
-            }
             if (isPlayingAudio)
             {
                 audioPositionLabel.Content = $"{mediaPlayer.Position.ToString(@"hh\:mm\:ss")} / {currentlyPlayingMusicList[currentPlayingIndex].Duration}";
@@ -119,6 +106,7 @@ namespace Navi
 
                 currentlyViewingMusicList.Add(new MusicList { Title = title, Duration = duration });
                 musicListView.Items.Refresh();
+                reader.Dispose();
             }
         }
 
@@ -144,6 +132,8 @@ namespace Navi
             if (currentPlayingIndex == currentlyPlayingMusicList.Count - 1) // If last song in list, then pause.
             {
                 PauseAudio();
+                audioPositionSlider.Value = 0; // Reset slider and label values back to zero.
+                audioPositionLabel.Content = $"{mediaPlayer.Position.ToString(@"hh\:mm\:ss")} / {currentlyPlayingMusicList[currentPlayingIndex].Duration}";
                 return;
             }
 
@@ -155,6 +145,8 @@ namespace Navi
                 mediaPlayer.Play();
             }
             currentPlayingLabel.Content = currentlyPlayingMusicList[currentPlayingIndex].Title;
+
+            musicListView.SelectedItem = null;
         }
 
         private void SkipBackward()
@@ -169,6 +161,8 @@ namespace Navi
                 mediaPlayer.Play();
             }
             currentPlayingLabel.Content = currentlyPlayingMusicList[currentPlayingIndex].Title;
+
+            musicListView.SelectedItem = null;
         }
 
         private void PlayAudio()
@@ -484,7 +478,6 @@ namespace Navi
 
             currentlyViewingMusicList.RemoveAt(musicListView.SelectedIndex);
             musicListView.Items.Refresh();
-
             File.Delete(songPath);
         }
     }
