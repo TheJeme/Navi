@@ -36,6 +36,7 @@ namespace Navi
             dt.Start();
 
             isPlayingAudio = false;
+            isLooping = false;
 
             mediaPlayer = new MediaPlayer();
 
@@ -50,7 +51,20 @@ namespace Navi
         // Updates AudiopositionLabel and AudiopositionSlider every second.
         // If song is completed then loops or skips forward.
         private void dtTicker(object sender, EventArgs e) 
-        {      
+        {
+            try
+            {
+
+                File.Open(@"D:\KOODAUS\C#\WPF\Navi\Navi\bin\Debug\library\o – kopio (2)\【MV】 鹿乃 「Stella-rium」 【OFFICIAL】.mp3", FileMode.Open, FileAccess.Read, FileShare.None);
+                Console.WriteLine("not used");
+            }
+
+            catch (Exception)
+            {
+
+                Console.WriteLine("used");
+
+            }
             if (isPlayingAudio)
             {
                 audioPositionLabel.Content = $"{mediaPlayer.Position.ToString(@"hh\:mm\:ss")} / {currentlyPlayingMusicList[currentPlayingIndex].Duration}";
@@ -93,6 +107,7 @@ namespace Navi
         private void CheckSongStatus()
         {
             currentlyViewingMusicList.Clear();
+            musicListView.Items.Refresh();
 
             foreach (var directoryPath in Directory.GetFiles($"./library/{libraryListView.SelectedValue.ToString()}/"))
             {
@@ -103,8 +118,8 @@ namespace Navi
                 string title = new DirectoryInfo(directoryPath).Name.ToString().Remove(new DirectoryInfo(directoryPath).Name.ToString().Length - 4);
 
                 currentlyViewingMusicList.Add(new MusicList { Title = title, Duration = duration });
+                musicListView.Items.Refresh();
             }
-            musicListView.Items.Refresh();
         }
 
         //Loops the song
@@ -280,7 +295,7 @@ namespace Navi
         // Changes the library order by one to up.
         private void MoveUpLibrary_Click(object sender, RoutedEventArgs e)
         {
-            if (libraryListView.SelectedIndex == 0) return; // if nothing is selected then return
+            if (libraryListView.SelectedIndex <= 0) return; // Can't move first item and handles pontetial error.
 
             var item = libraryList[libraryListView.SelectedIndex];
             libraryList.RemoveAt(libraryListView.SelectedIndex);
@@ -291,7 +306,7 @@ namespace Navi
         // Changes the library order by one to down.
         private void MoveDownLibrary_Click(object sender, RoutedEventArgs e)
         {
-            if (libraryListView.SelectedIndex == libraryList.Count - 1) return; // if nothing is selected then return
+            if (libraryListView.SelectedIndex == libraryList.Count - 1 || libraryListView.SelectedIndex == -1) return; // Can't move last item
 
             var item = libraryList[libraryListView.SelectedIndex];
             libraryList.RemoveAt(libraryListView.SelectedIndex);
@@ -301,6 +316,8 @@ namespace Navi
 
         private void RenameLibrary_Click(object sender, RoutedEventArgs e)
         {
+            if (libraryListView.SelectedIndex == -1) return;
+
             if (currentlyPlayingMusicList.SequenceEqual(currentlyViewingMusicList) && currentPlayingLabel.Content.ToString().Length != 0) // Can't rename currently playing list
             {
                 MessageBox.Show("Can't rename library that is playing.", "Erorr");
@@ -326,6 +343,8 @@ namespace Navi
 
         private void DeleteLibrary_Click(object sender, RoutedEventArgs e)
         {
+            if (libraryListView.SelectedIndex == -1) return;
+
             if (!Directory.Exists("./library/" + libraryListView.SelectedValue.ToString())) return; // Can't delete library that doesn't exist.
 
             if (currentlyPlayingMusicList.SequenceEqual(currentlyViewingMusicList) && currentPlayingLabel.Content.ToString().Length != 0) // Can't rename currently playing list
