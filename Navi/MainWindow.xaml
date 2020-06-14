@@ -134,7 +134,7 @@
 
                         <StackPanel x:Name="volumePanel" Visibility="Collapsed" Orientation="Horizontal" HorizontalAlignment="Center">
                             <Label Content="Volume:" Foreground="White"/>
-                            <Slider x:Name="volumeSlider" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Right" Width="120" Value="0.1" Minimum="0" Maximum="0.2" ValueChanged="VolumeSlider_ValueChanged"/>
+                            <Slider x:Name="volumeSlider" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Right" Width="120" Minimum="0" Maximum="0.2" ValueChanged="VolumeSlider_ValueChanged"/>
                         </StackPanel>
                         
                     </StackPanel>

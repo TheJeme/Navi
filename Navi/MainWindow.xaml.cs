@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Threading;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Navi.Properties;
 
 using NAudio.Wave;
 
@@ -42,6 +43,9 @@ namespace Navi
 
             CheckLibraryStatus();
             InitializeComponent();
+
+            Console.WriteLine(Settings.Default["volume"]);
+            volumeSlider.Value = Convert.ToDouble(Settings.Default["volume"]);
 
             libraryListView.ItemsSource = libraryList;
             musicListView.ItemsSource = currentlyViewingMusicList;
@@ -247,6 +251,10 @@ namespace Navi
 
         private void VolumeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
+            Settings.Default["volume"] = volumeSlider.Value.ToString();
+            Console.WriteLine(Settings.Default["volume"]);
+            Settings.Default.Save();
+
             mediaPlayer.Volume = volumeSlider.Value;
 
             if (volumeSlider.Value == 0)
