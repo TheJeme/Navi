@@ -96,13 +96,20 @@ namespace Navi
             currentlyViewingMusicList.Clear();
             musicListView.Items.Refresh();
 
-            foreach (var directoryPath in Directory.GetFiles($"./library/{libraryListView.SelectedValue.ToString()}/"))
-            {
-                if (!directoryPath.EndsWith(".mp3")) continue; // Does not include any other type files than mp3.
+            string filePath = $"./library/{libraryListView.SelectedValue.ToString()}/";
+            FileInfo[] files = new DirectoryInfo(filePath)
+                        .GetFiles("*.mp3")
+                        .OrderBy(f => f.CreationTime)
+                        .ToArray();
 
-                Mp3FileReader reader = new Mp3FileReader($"{directoryPath}");
+            foreach (var directoryPath in files)
+            {
+                //Console.WriteLine($"{filePath}/{directoryPath}");
+                //if (!directoryPath.EndsWith(".mp3")) continue; // Does not include any other type files than mp3.
+
+                Mp3FileReader reader = new Mp3FileReader($"{filePath}/{directoryPath}");
                 TimeSpan duration = TimeSpan.Parse(reader.TotalTime.ToString(@"hh\:mm\:ss"));
-                string title = new DirectoryInfo(directoryPath).Name.ToString().Remove(new DirectoryInfo(directoryPath).Name.ToString().Length - 4);
+                string title = directoryPath.Name.ToString().Remove(directoryPath.Name.ToString().Length - 4);
 
                 currentlyViewingMusicList.Add(new MusicList { Title = title, Duration = duration });
                 musicListView.Items.Refresh();

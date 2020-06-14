@@ -9,7 +9,6 @@
         Title="Create new Library"
         Height="170" Width="360"
         ResizeMode="NoResize"
-        Topmost="True"
         x:Name="window">
     <Grid>
         <StackPanel>

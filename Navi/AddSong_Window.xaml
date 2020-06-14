@@ -9,7 +9,6 @@
         Title="Add song"
         Height="200" Width="760"
         ResizeMode="NoResize"
-        Topmost="True"
         x:Name="window">
     <Grid>
         <StackPanel>
