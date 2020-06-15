@@ -108,9 +108,6 @@ namespace Navi
 
             foreach (var directoryPath in files)
             {
-                //Console.WriteLine($"{filePath}/{directoryPath}");
-                //if (!directoryPath.EndsWith(".mp3")) continue; // Does not include any other type files than mp3.
-
                 Mp3FileReader reader = new Mp3FileReader($"{filePath}/{directoryPath}");
                 TimeSpan duration = TimeSpan.Parse(reader.TotalTime.ToString(@"hh\:mm\:ss"));
                 string title = directoryPath.Name.ToString().Remove(directoryPath.Name.ToString().Length - 4);
@@ -151,6 +148,7 @@ namespace Navi
             currentPlayingIndex++;
             var mediaFile = new Uri(Environment.CurrentDirectory + $"/library/{libraryListView.SelectedValue.ToString()}/{currentlyPlayingMusicList[currentPlayingIndex].Title}.mp3");
             mediaPlayer.Open(mediaFile);
+            audioPositionSlider.Maximum = currentlyPlayingMusicList[currentPlayingIndex].Duration.TotalSeconds;
             if (isPlayingAudio)
             {
                 mediaPlayer.Play();
@@ -167,6 +165,7 @@ namespace Navi
             currentPlayingIndex--;
             var mediaFile = new Uri(Environment.CurrentDirectory + $"/library/{libraryListView.SelectedValue.ToString()}/{currentlyPlayingMusicList[currentPlayingIndex].Title}.mp3");
             mediaPlayer.Open(mediaFile);
+            audioPositionSlider.Maximum = currentlyPlayingMusicList[currentPlayingIndex].Duration.TotalSeconds;
             if (isPlayingAudio)
             {
                 mediaPlayer.Play();
