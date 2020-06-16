@@ -88,9 +88,15 @@ namespace Navi
                 Directory.CreateDirectory("./library");
             }
 
-            foreach (var directoryPath in Directory.GetDirectories("./library/"))
+            var di = new DirectoryInfo("./library");
+            var directories = di.EnumerateDirectories()
+                                .OrderBy(d => d.CreationTime)
+                                .Select(d => d.Name)
+                                .ToList();
+
+            foreach (var dir in directories)
             {
-                libraryList.Add(new DirectoryInfo(directoryPath).Name);
+                libraryList.Add(dir);
             }
         }
 
