@@ -44,7 +44,6 @@ namespace Navi
             CheckLibraryStatus();
             InitializeComponent();
 
-            Console.WriteLine(Settings.Default["volume"]);
             volumeSlider.Value = Convert.ToDouble(Settings.Default["volume"]);
 
             libraryListView.ItemsSource = libraryList;
@@ -89,7 +88,7 @@ namespace Navi
             }
 
             var di = new DirectoryInfo("./library");
-            var directories = di.EnumerateDirectories()
+            var directories = di.EnumerateDirectories() // Gets directories in date added order
                                 .OrderBy(d => d.CreationTime)
                                 .Select(d => d.Name)
                                 .ToList();
@@ -107,20 +106,32 @@ namespace Navi
             musicListView.Items.Refresh();
 
             string filePath = $"./library/{libraryListView.SelectedValue.ToString()}/";
-            FileInfo[] files = new DirectoryInfo(filePath)
+            FileInfo[] files = new DirectoryInfo(filePath) // Gets songs in date added order
                         .GetFiles("*.mp3")
                         .OrderBy(f => f.CreationTime)
                         .ToArray();
 
             foreach (var directoryPath in files)
             {
-                Mp3FileReader reader = new Mp3FileReader($"{filePath}/{directoryPath}");
-                TimeSpan duration = TimeSpan.Parse(reader.TotalTime.ToString(@"hh\:mm\:ss"));
-                string title = directoryPath.Name.ToString().Remove(directoryPath.Name.ToString().Length - 4);
+                try
+                {
+                    string titleAndDuration = directoryPath.Name.ToString();
+                    string title = titleAndDuration.Substring(0, titleAndDuration.LastIndexOf('-') - 1);
+                    string duration = titleAndDuration.Substring(titleAndDuration.LastIndexOf('-') + 2, 8).Replace('.', ':');
 
-                currentlyViewingMusicList.Add(new MusicList { Title = title, Duration = duration });
-                musicListView.Items.Refresh();
-                reader.Dispose();
+                    currentlyViewingMusicList.Add(new MusicList { Filename = $"{title} - {duration.Replace(':', '.')}.mp3", Title = title, Duration = TimeSpan.Parse(duration) });
+                }
+
+                catch (Exception) // Happens if file name doesn't include duration of song.
+                {
+                    Mp3FileReader reader = new Mp3FileReader($"{filePath}/{directoryPath}");
+                    string title = directoryPath.Name.ToString().Remove(directoryPath.Name.ToString().Length - 4);
+                    TimeSpan duration = TimeSpan.Parse(reader.TotalTime.ToString(@"hh\:mm\:ss"));                
+                    currentlyViewingMusicList.Add(new MusicList { Filename = $"{title} - {duration.ToString().Replace(':', '.')}.mp3", Title = title, Duration = duration });
+                    reader.Dispose();
+                    File.Move($"{filePath}/{directoryPath}", $"{filePath}/{title} - {duration.ToString().Replace(':', '.')}.mp3");
+                }
+                musicListView.Items.Refresh();               
             }
         }
 
@@ -152,7 +163,7 @@ namespace Navi
             }
 
             currentPlayingIndex++;
-            var mediaFile = new Uri(Environment.CurrentDirectory + $"/library/{libraryListView.SelectedValue.ToString()}/{currentlyPlayingMusicList[currentPlayingIndex].Title}.mp3");
+            var mediaFile = new Uri(Environment.CurrentDirectory + $"/library/{libraryListView.SelectedValue.ToString()}/{currentlyPlayingMusicList[currentPlayingIndex].Filename}");
             mediaPlayer.Open(mediaFile);
             audioPositionSlider.Maximum = currentlyPlayingMusicList[currentPlayingIndex].Duration.TotalSeconds;
             if (isPlayingAudio)
@@ -169,7 +180,7 @@ namespace Navi
             if (currentPlayingIndex == 0) return; // If the first item, then doesn't accept to go negative.
 
             currentPlayingIndex--;
-            var mediaFile = new Uri(Environment.CurrentDirectory + $"/library/{libraryListView.SelectedValue.ToString()}/{currentlyPlayingMusicList[currentPlayingIndex].Title}.mp3");
+            var mediaFile = new Uri(Environment.CurrentDirectory + $"/library/{libraryListView.SelectedValue.ToString()}/{currentlyPlayingMusicList[currentPlayingIndex].Filename}");
             mediaPlayer.Open(mediaFile);
             audioPositionSlider.Maximum = currentlyPlayingMusicList[currentPlayingIndex].Duration.TotalSeconds;
             if (isPlayingAudio)
@@ -193,7 +204,7 @@ namespace Navi
                     currentPlayingIndex = musicListView.SelectedIndex;
                     currentPlayingLabel.Content = currentlyPlayingMusicList[currentPlayingIndex].Title;
 
-                    var mediaFile = new Uri(Environment.CurrentDirectory + $"/library/{libraryListView.SelectedValue.ToString()}/{currentlyPlayingMusicList[currentPlayingIndex].Title}.mp3");
+                    var mediaFile = new Uri(Environment.CurrentDirectory + $"/library/{libraryListView.SelectedValue.ToString()}/{currentlyPlayingMusicList[currentPlayingIndex].Filename}");
                     mediaPlayer.Open(mediaFile);
                     audioPositionSlider.Maximum = currentlyPlayingMusicList[currentPlayingIndex].Duration.TotalSeconds;
                 }
@@ -257,7 +268,6 @@ namespace Navi
         private void VolumeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             Settings.Default["volume"] = volumeSlider.Value.ToString();
-            Console.WriteLine(Settings.Default["volume"]);
             Settings.Default.Save();
 
             mediaPlayer.Volume = volumeSlider.Value;
@@ -458,6 +468,7 @@ namespace Navi
             {
                 mediaPlayer.Position = TimeSpan.FromSeconds(audioPositionSlider.Value);
             }
+            Console.WriteLine(audioPositionSlider.Maximum); 
         }
 
         private void PlaySongMenuItem_Click(object sender, RoutedEventArgs e)

@@ -89,6 +89,8 @@
                     
                     <ListView.ContextMenu>
                         <ContextMenu>
+                            <MenuItem Header="Add song" Click="AddSongButton_Click"/>
+                                <Separator />
                             <MenuItem Header="Move up" Click="MoveUpLibrary_Click"/>
                             <MenuItem Header="Move down" Click="MoveDownLibrary_Click"/>
                                 <Separator />

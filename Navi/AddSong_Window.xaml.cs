@@ -38,19 +38,21 @@ namespace Navi
             try // Tries to download audio if valid url/id.
             {
                 var video = await youtube.Videos.GetAsync(youtubeID);
-                var title = CleanTitle(video.Title); // Cleans illegal characters to bypass errors
+                var cleanTitle = CleanTitle(video.Title); // Cleans illegal characters to bypass errors
+                var duration = video.Duration;
+                var cleanDuration = CleanDuration(duration); // Converts duration to legal filename e.g (00.37.12) instead of (00:37:12)
                 CheckLibraryStatus(); // Check that root directory exists
-                MainWindow.currentlyViewingMusicList.Add(new MusicList { Title = video.Title, Duration = video.Duration});
+                MainWindow.currentlyViewingMusicList.Add(new MusicList { Filename = $"{cleanTitle} - {cleanDuration}.mp3", Title = cleanTitle, Duration = duration });
                 (this.Owner as MainWindow).musicListView.Items.Refresh();
-                var destinationPath = Path.Combine($"./library/{(this.Owner as MainWindow).libraryListView.SelectedValue.ToString()}/", $"{title}.mp3");
+                var destinationPath = Path.Combine($"./library/{(this.Owner as MainWindow).libraryListView.SelectedValue.ToString()}/{cleanTitle} - {cleanDuration}.mp3");
 
-                okButton.IsEnabled = false; // Disables buttons to alert user.
+                okButton.IsEnabled = false; // Disables buttons to notify user and to keep errors away.
                 closeButton.IsEnabled = false;
                 songLabel.IsEnabled = false;
                 downloadingLabel.Visibility = Visibility.Visible;
 
 
-                await DownloadAudio(youtubeID, destinationPath, video); // Waits till download is complete and then continues the code.
+                await DownloadAudio(youtubeID, destinationPath); // Waits till download is complete and then continues the code.
 
                 (this.Owner as MainWindow).libraryListView.Items.Refresh(); // Refresh libraryListView to make sure song is added to list and is visible.
             }
@@ -60,7 +62,7 @@ namespace Navi
             }
             catch (InvalidOperationException)
             {
-                MessageBox.Show("SOMETHING HAPPANED", "Error");
+                MessageBox.Show("SOMETHING HAPPENED", "Error");
             }
             catch (ArgumentException)
             {
@@ -83,12 +85,17 @@ namespace Navi
             }
         }
 
+        private string CleanDuration(TimeSpan duration)
+        {
+            return duration.ToString().Replace(':', '.');
+        }
+
         private string CleanTitle(string title)
         {
             return string.Join("_", title.Split(Path.GetInvalidFileNameChars()));
         }
 
-        private async Task DownloadAudio(string youtubeID, string destinationPath, YoutubeExplode.Videos.Video video)
+        private async Task DownloadAudio(string youtubeID, string destinationPath)
         {
             await youtubeConverter.DownloadVideoAsync(youtubeID, destinationPath);
         }
