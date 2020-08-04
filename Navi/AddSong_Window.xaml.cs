@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
@@ -33,7 +34,7 @@ namespace Navi
         {
             string youtubeID = songLabel.Text;
 
-            if (youtubeID.Length == 0) this.Close(); // Youtube URL/ID can't be blank.
+            if (youtubeID.Length == 0) this.Close(); // Youtube URL/ID can't be null.
 
             try // Tries to download audio if valid url/id.
             {
@@ -42,8 +43,14 @@ namespace Navi
                 var duration = video.Duration;
                 var cleanDuration = CleanDuration(duration); // Converts duration to legal filename e.g (00.37.12) instead of (00:37:12)
                 CheckLibraryStatus(); // Check that root directory exists
+
+                if (File.Exists($"./library/{(this.Owner as MainWindow).libraryListView.SelectedValue.ToString()}/{cleanTitle} - {cleanDuration}.mp3"))
+                {
+                    MessageBox.Show("The song is already in the library", "Error");
+                    return;
+                }
+
                 MainWindow.currentlyViewingMusicList.Add(new MusicList { Filename = $"{cleanTitle} - {cleanDuration}.mp3", Title = cleanTitle, Duration = duration });
-                (this.Owner as MainWindow).musicListView.Items.Refresh();
                 var destinationPath = Path.Combine($"./library/{(this.Owner as MainWindow).libraryListView.SelectedValue.ToString()}/{cleanTitle} - {cleanDuration}.mp3");
 
                 okButton.IsEnabled = false; // Disables buttons to notify user and to keep errors away.
@@ -51,18 +58,20 @@ namespace Navi
                 songLabel.IsEnabled = false;
                 downloadingLabel.Visibility = Visibility.Visible;
 
+                await youtubeConverter.DownloadVideoAsync(youtubeID, destinationPath);
+                //await DownloadAudio(youtubeID, destinationPath); // Waits till download is complete and then continues the code.
 
-                await DownloadAudio(youtubeID, destinationPath); // Waits till download is complete and then continues the code.
-
+                MainWindow.currentlyPlayingMusicList = new List<MusicList>(MainWindow.currentlyViewingMusicList);
+                (this.Owner as MainWindow).musicListView.Items.Refresh();
                 (this.Owner as MainWindow).libraryListView.Items.Refresh(); // Refresh libraryListView to make sure song is added to list and is visible.
             }
             catch (IOException)
             {
                 MessageBox.Show("The song is already in the library", "Error");
             }
-            catch (InvalidOperationException)
+            catch (InvalidOperationException er)
             {
-                MessageBox.Show("SOMETHING HAPPENED", "Error");
+                MessageBox.Show(er.ToString(), "error");
             }
             catch (ArgumentException)
             {
@@ -97,7 +106,7 @@ namespace Navi
 
         private async Task DownloadAudio(string youtubeID, string destinationPath)
         {
-            await youtubeConverter.DownloadVideoAsync(youtubeID, destinationPath);
+            await youtubeConverter.DownloadVideoAsync(youtubeID, destinationPath);            
         }
     }
 }
