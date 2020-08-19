@@ -5,7 +5,7 @@
 
 ## Download
 
-[Download] Coming soon
+[Download](https://github.com/TheJeme/Navi/releases/ "Navi") the latest version.
 
 ## License
 
