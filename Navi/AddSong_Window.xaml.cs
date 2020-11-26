@@ -15,12 +15,10 @@ namespace Navi
     public partial class AddSong_Window : Window
     {
         private YoutubeClient youtube;
-        private YoutubeConverter youtubeConverter;
 
         public AddSong_Window()
         {
             youtube = new YoutubeClient();
-            youtubeConverter = new YoutubeConverter(youtube);
 
             InitializeComponent();
         }
@@ -58,8 +56,7 @@ namespace Navi
                 songLabel.IsEnabled = false;
                 downloadingLabel.Visibility = Visibility.Visible;
 
-                await youtubeConverter.DownloadVideoAsync(youtubeID, destinationPath);
-                //await DownloadAudio(youtubeID, destinationPath); // Waits till download is complete and then continues the code.
+                await youtube.Videos.DownloadAsync(youtubeID, destinationPath);
 
                 MainWindow.currentlyPlayingMusicList = new List<MusicList>(MainWindow.currentlyViewingMusicList);
                 (this.Owner as MainWindow).musicListView.Items.Refresh();
@@ -102,11 +99,6 @@ namespace Navi
         private string CleanTitle(string title)
         {
             return string.Join("_", title.Split(Path.GetInvalidFileNameChars()));
-        }
-
-        private async Task DownloadAudio(string youtubeID, string destinationPath)
-        {
-            await youtubeConverter.DownloadVideoAsync(youtubeID, destinationPath);            
         }
     }
 }
