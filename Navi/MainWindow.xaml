@@ -9,7 +9,8 @@
         Icon="Resources/navi.ico"
         Background="#162029"
         Height="450" Width="800"
-        MinHeight="285" MinWidth="400">
+        MinHeight="285" MinWidth="400"
+        Closing="Window_Closing">
 
     <Grid>
         <Grid.ColumnDefinitions>

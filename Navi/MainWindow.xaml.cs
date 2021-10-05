@@ -9,6 +9,7 @@ using System.Windows.Media.Imaging;
 using Navi.Properties;
 
 using NAudio.Wave;
+using DiscordRPC;
 
 namespace Navi
 {
@@ -23,6 +24,8 @@ namespace Navi
         public static List<MusicList> currentlyViewingMusicList = new List<MusicList>();
         
         private MediaPlayer mediaPlayer;
+
+        private DiscordRpcClient discordClient;
 
         private bool isPlayingAudio;
         private bool isLooping;
@@ -56,6 +59,28 @@ namespace Navi
             }
             libraryListView.ItemsSource = libraryList;
             musicListView.ItemsSource = currentlyViewingMusicList;
+
+
+            discordClient = new DiscordRpcClient("790948481841233950");
+
+            discordClient.Initialize();
+
+            updatePresence("Idling");
+
+        }
+
+        private void updatePresence(string details = "", string state = "")
+        {
+            discordClient.SetPresence(new RichPresence()
+            {
+                Details = details,
+                State = state,
+                Assets = new Assets()
+                {
+                    LargeImageKey = "icon",
+                    LargeImageText = "Navi v1.2.0",
+                }
+            });
         }
 
 
@@ -180,6 +205,7 @@ namespace Navi
             currentPlayingLabel.Content = currentlyPlayingMusicList[currentPlayingIndex].Title;
 
             musicListView.SelectedItem = null;
+            updatePresence("Listening:", currentPlayingLabel.Content.ToString());
         }
 
         private void SkipBackward()
@@ -204,6 +230,7 @@ namespace Navi
             currentPlayingLabel.Content = currentlyPlayingMusicList[currentPlayingIndex].Title;
 
             musicListView.SelectedItem = null;
+            updatePresence("Listening:", currentPlayingLabel.Content.ToString());
         }
 
         private void PlayAudio()
@@ -226,6 +253,7 @@ namespace Navi
             if (currentlyPlayingMusicList.Count == 0) return;
 
             mediaPlayer.Play();
+            updatePresence("Listening:", currentPlayingLabel.Content.ToString());
 
             playMenuItem.IsEnabled = false;
             pauseMenuItem.IsEnabled = true;
@@ -523,6 +551,11 @@ namespace Navi
             currentlyViewingMusicList.RemoveAt(musicListView.SelectedIndex);
             musicListView.Items.Refresh();
             File.Delete(songPath);
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            discordClient.Dispose();
         }
     }
 }
