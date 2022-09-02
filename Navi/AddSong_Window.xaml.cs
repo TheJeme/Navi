@@ -39,7 +39,7 @@ namespace Navi
                 var video = await youtube.Videos.GetAsync(youtubeID);
                 var cleanTitle = CleanTitle(video.Title); // Cleans illegal characters to bypass errors
                 var duration = video.Duration;
-                var cleanDuration = CleanDuration(duration); // Converts duration to legal filename e.g (00.37.12) instead of (00:37:12)
+                var cleanDuration = CleanDuration((TimeSpan)duration); // Converts duration to legal filename e.g (00.37.12) instead of (00:37:12)
                 CheckLibraryStatus(); // Check that root directory exists
 
                 if (File.Exists($"./library/{(this.Owner as MainWindow).libraryListView.SelectedValue.ToString()}/{cleanTitle} - {cleanDuration}.mp3"))
@@ -48,7 +48,7 @@ namespace Navi
                     return;
                 }
 
-                MainWindow.currentlyViewingMusicList.Add(new MusicList { Filename = $"{cleanTitle} - {cleanDuration}.mp3", Title = cleanTitle, Duration = duration });
+                MainWindow.currentlyViewingMusicList.Add(new MusicList { Filename = $"{cleanTitle} - {cleanDuration}.mp3", Title = cleanTitle, Duration = (TimeSpan)duration });
                 var destinationPath = Path.Combine($"./library/{(this.Owner as MainWindow).libraryListView.SelectedValue.ToString()}/{cleanTitle} - {cleanDuration}.mp3");
 
                 okButton.IsEnabled = false; // Disables buttons to notify user and to keep errors away.

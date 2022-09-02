@@ -205,7 +205,7 @@ namespace Navi
             currentPlayingLabel.Content = currentlyPlayingMusicList[currentPlayingIndex].Title;
 
             musicListView.SelectedItem = null;
-            updatePresence("Listening:", currentPlayingLabel.Content.ToString());
+            updatePresence("Listening", currentPlayingLabel.Content.ToString());
         }
 
         private void SkipBackward()
@@ -230,7 +230,7 @@ namespace Navi
             currentPlayingLabel.Content = currentlyPlayingMusicList[currentPlayingIndex].Title;
 
             musicListView.SelectedItem = null;
-            updatePresence("Listening:", currentPlayingLabel.Content.ToString());
+            updatePresence("Listening", currentPlayingLabel.Content.ToString());
         }
 
         private void PlayAudio()
@@ -253,7 +253,7 @@ namespace Navi
             if (currentlyPlayingMusicList.Count == 0) return;
 
             mediaPlayer.Play();
-            updatePresence("Listening:", currentPlayingLabel.Content.ToString());
+            updatePresence("Listening", currentPlayingLabel.Content.ToString());
 
             playMenuItem.IsEnabled = false;
             pauseMenuItem.IsEnabled = true;
